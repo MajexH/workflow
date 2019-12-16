@@ -1,16 +1,20 @@
 package xyz.majexh.workflow.workflow.entity.def;
 
+import com.alibaba.fastjson.JSON;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.Utils.ConfigGetter;
 import xyz.majexh.workflow.workflow.workflowEnum.Type;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 @Data
+@Slf4j
 public class Node {
 
     private String id;
@@ -38,5 +42,15 @@ public class Node {
     public Node(Type type) {
         this();
         this.type = type;
+    }
+
+    public boolean checkInputParams(HashMap<String, JSON> inputParams) {
+        for (String inputParam : this.inputParams) {
+            if (!inputParams.containsKey(inputParam)) {
+                log.error(String.format("%s param not exists", inputParam));
+                return false;
+            }
+        }
+        return true;
     }
 }

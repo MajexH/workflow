@@ -44,4 +44,8 @@ public class Topology {
             }});
         }
     }
+
+    public Node getNode(String nodeId) {
+        return this.nodeMap.get(nodeId);
+    }
 }
