@@ -1,0 +1,6 @@
+workflow:
+  retryMax: 5
+  retryDelta: 0.01
+logging:
+  level:
+    xyz.majexh.workflow: debug

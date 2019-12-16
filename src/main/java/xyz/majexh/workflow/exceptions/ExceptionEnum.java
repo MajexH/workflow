@@ -1,0 +1,32 @@
+package xyz.majexh.workflow.exceptions;
+
+public enum ExceptionEnum {
+
+    DUPLICATE_NODE_ID(400, "重复的节点ID"),
+    TOPOLOGY_ARGS_NOT_CAPABLE(400, "topology参数错误"),
+    INTERNAL_ERROR(500, "内部错误");
+
+    private int status;
+    private String message;
+
+    ExceptionEnum(int status, String Message) {
+        this.status = status;
+        this.message = Message;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}

@@ -9,7 +9,7 @@ public enum State {
     FAIL("fail"),
     PICK("pick"),
     FINISHED("finish"),
-    INQUEUE("inQueue");
+    IN_QUEUE("inQueue");
 
     private String stateName;
 

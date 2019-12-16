@@ -1,0 +1,66 @@
+{
+  "name": "GNSS",
+  "nodes": [
+    {
+      "id": 0,
+      "name": "test1",
+      "handle": "handle1",
+      "input_params": [
+        "a",
+        "b"
+      ],
+      "output_params": [
+        "c"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "test2",
+      "handle": "handle2",
+      "input_params": [
+        "c"
+      ],
+      "output_params": [
+        "d"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "test3",
+      "handle": "handle3",
+      "retry_delta": 0.01,
+      "input_params": [
+        "c"
+      ],
+      "output_params": [
+        "e"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "barrier",
+      "type": "system"
+    },
+    {
+      "id": 4,
+      "name": "test4",
+      "handle": "handle4",
+      "input_params": [
+        "d",
+        "e"
+      ],
+      "output_params": [
+        "f"
+      ]
+    }
+  ],
+  "start_node_id": 0,
+  "end_node_id": 4,
+  "edges": [
+    [0, 1],
+    [0, 2],
+    [1, 3],
+    [2, 3],
+    [3, 4]
+  ]
+}
