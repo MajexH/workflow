@@ -12,6 +12,8 @@ import xyz.majexh.workflow.workflow.workflowEnum.State;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.function.Function;
 
 /**
  * topology被启动后形成chain
@@ -40,6 +42,7 @@ public class Chain {
         }};
     }
 
+    // TODO: AOP hook
     public void changeState(State state) {
         if (this.state.isSameSate(state)) return;
         this.tracing.put(String.format("%s -> %s", this.state.getStateName(), state.getStateName()), new Date().getTime());
