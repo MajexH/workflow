@@ -1,4 +1,4 @@
-package xyz.majexh.workflow.Utils;
+package xyz.majexh.workflow.utils;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

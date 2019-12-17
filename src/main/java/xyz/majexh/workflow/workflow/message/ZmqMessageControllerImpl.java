@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class ZmqMessageImpl implements Message {
+public class ZmqMessageControllerImpl implements MessageController {
     @Override
     public void putTask() {
 

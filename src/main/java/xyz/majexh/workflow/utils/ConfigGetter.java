@@ -1,4 +1,4 @@
-package xyz.majexh.workflow.Utils;
+package xyz.majexh.workflow.utils;
 
 public class ConfigGetter {
 

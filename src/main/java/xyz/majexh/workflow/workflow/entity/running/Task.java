@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import xyz.majexh.workflow.workflow.entity.def.Node;
 import xyz.majexh.workflow.workflow.workflowEnum.State;
+import xyz.majexh.workflow.workflow.workflowEnum.Type;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Node被启动后形成Task
@@ -40,5 +42,13 @@ public class Task {
         if (this.state.isSameSate(state)) return;
         this.tracing.put(String.format("%s -> %s", this.state.getStateName(), state.getStateName()), new Date().getTime());
         this.state = state;
+    }
+
+    public Type getNodeType() {
+        return this.node.getType();
+    }
+
+    public List<String> getNodeSystemArgs() {
+        return this.node.getSystemArgs();
     }
 }

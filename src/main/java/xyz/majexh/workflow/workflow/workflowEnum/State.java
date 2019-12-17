@@ -1,9 +1,11 @@
 package xyz.majexh.workflow.workflow.workflowEnum;
 
+import java.io.Serializable;
+
 /**
  * 指示当前任务处于什么状态
  */
-public enum State {
+public enum State implements Serializable {
     CREATED("creat"),
     RUNNING("running"),
     FAIL("fail"),

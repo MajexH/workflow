@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.workflow.entity.def.Topology;
 import xyz.majexh.workflow.workflow.entity.running.Chain;
-import xyz.majexh.workflow.workflow.message.Message;
+import xyz.majexh.workflow.workflow.message.MessageController;
 
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
@@ -22,7 +22,7 @@ public class Controller {
     });
     private HashMap<String, Topology> topologies;
     private HashMap<String, Chain> chainMap;
-    private Message zmqMessageImpl;
+    private MessageController zmqMessageControllerImpl;
 
     @Autowired
     public void setTopologies(HashMap<String, Topology> topologies) {
@@ -35,8 +35,8 @@ public class Controller {
     }
 
     @Autowired
-    public void setZmqMessageImpl(Message zmqMessageImpl) {
-        this.zmqMessageImpl = zmqMessageImpl;
+    public void setZmqMessageControllerImpl(MessageController zmqMessageControllerImpl) {
+        this.zmqMessageControllerImpl = zmqMessageControllerImpl;
     }
 
     public void submitTask() {

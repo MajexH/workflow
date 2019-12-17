@@ -1,6 +1,6 @@
 package xyz.majexh.workflow.workflow.message;
 
-public interface Message {
+public interface MessageController {
 
     void putTask();
 

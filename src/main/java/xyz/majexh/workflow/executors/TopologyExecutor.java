@@ -1,6 +1,8 @@
 package xyz.majexh.workflow.executors;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.exceptions.BaseException;
@@ -10,6 +12,7 @@ import xyz.majexh.workflow.workflow.entity.def.Topology;
 import xyz.majexh.workflow.workflow.entity.running.Chain;
 import xyz.majexh.workflow.workflow.entity.running.Task;
 import xyz.majexh.workflow.workflow.workflowEnum.State;
+import xyz.majexh.workflow.workflow.workflowEnum.Type;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,17 +67,47 @@ public class TopologyExecutor {
             return tasks;
         }
         Task task = chain.getTask(taskId);
-        List<String> nodes = chain.getTopology().getEdgePair().get(taskId.split(":")[1]);
-        for (String node : nodes) {
+        String nodeId = taskId.split(":")[1];
+        for (String node : chain.getNextNodes(nodeId)) {
             String newTaskId = String.format("%s:%s", chain.getId(), node);
             if (chain.hasTask(newTaskId)) {
                 tasks.add(chain.getTask(taskId));
             } else {
-
-
-//                new Task(node, chain.getId(), task.getOutputParams());
+                Node current = chain.getNode(nodeId);
+                if (!current.checkInputParams(task.getOutputParams())) {
+                    log.error(String.format("%s output %s, cannot satisfy %s input params", taskId, task.getOutputParams(), current.getInputParams()));
+                    throw new BaseException(ExceptionEnum.OUTPUT_NOT_SATISFY);
+                }
+                Task currentTask = new Task(current, chain.getId(), task.getOutputParams());
+                this.fileSystemTaskArgs(chain.getId(), currentTask);
+                chain.addTask(currentTask);
+                tasks.add(task);
             }
         }
+        log.debug(String.format("get next tasks success, which is %s", tasks));
         return tasks;
+    }
+
+    /**
+     * 用于填充system类型节点的输入参数
+     * 其输入参数 主要是运行时的各类前置节点 需要在遇到屏障的时候
+     * 判断前置节点是否已经全部执行完毕
+     * @param chainId 当前task所属的链
+     * @param task 当前task
+     */
+    private void fileSystemTaskArgs(String chainId, Task task) {
+        if (task.getNodeType().isSameType(Type.SYSTEM_BARRIER)) {
+            HashMap<String, JSON> input = task.getInputParams();
+            List<Object> res = new ArrayList<>();
+            // 不用再次检查required域里面的值 因为topology不会动态的更新
+            // 添加所有的运行时的taskId到barrier的inputParams["required"]中
+            if (!input.containsKey("required" + task.getId())) {
+                for (String id : task.getNodeSystemArgs()) {
+                    res.add(String.format("%s:%s", chainId, id));
+                }
+                input.put("required" + task.getId(), new JSONArray(res));
+            }
+            log.debug(String.format("%s barrier add input params %s as required filed", task.getId(), res));
+        }
     }
 }

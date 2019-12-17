@@ -11,6 +11,7 @@ import xyz.majexh.workflow.workflow.workflowEnum.State;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * topology被启动后形成chain
@@ -60,5 +61,17 @@ public class Chain {
 
     public Task getTask(String taskId) {
         return this.taskMap.get(taskId);
+    }
+
+    public Node getNode(String nodeId) {
+        return this.topology.getNode(nodeId);
+    }
+
+    public List<String> getNextNodes(String nodeId) {
+        return this.topology.getNextNodes(nodeId);
+    }
+
+    public void addTask(Task task) {
+        this.taskMap.put(task.getId(), task);
     }
 }
