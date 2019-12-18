@@ -1,9 +1,11 @@
 package xyz.majexh.workflow.workflow.entity.def;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import xyz.majexh.workflow.utils.ConfigGetter;
+import xyz.majexh.workflow.utils.JSONUtils;
 import xyz.majexh.workflow.workflow.workflowEnum.Type;
 
 import java.util.ArrayList;
@@ -43,9 +45,10 @@ public class Node {
         this.type = type;
     }
 
-    public boolean checkInputParams(HashMap<String, JSON> inputParams) {
+    public boolean checkInputParams(JSON inputParams) {
+        HashMap<String, Object> inputParamsMap = JSONUtils.json2HashMap(inputParams);
         for (String inputParam : this.inputParams) {
-            if (!inputParams.containsKey(inputParam)) {
+            if (!inputParamsMap.containsKey(inputParam)) {
                 log.error(String.format("%s param not exists", inputParam));
                 return false;
             }

@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import xyz.majexh.workflow.utils.StringUtils;
 import xyz.majexh.workflow.workflow.workflowEnum.Type;
 
 import java.util.ArrayList;
@@ -22,11 +23,11 @@ public class Topology {
     private String endNodeId;
     // topology的所有节点
     private HashMap<String, Node> nodeMap;
-    // topology的所有图谱关系粉
+    // topology的所有图谱关系
     private HashMap<String, List<String>> edgePair;
 
     public Topology() {
-        this.id = UUID.randomUUID().toString();
+        this.id = StringUtils.getUUID();
         this.nodes = new ArrayList<>();
         this.nodeMap = new HashMap<>();
         this.edgePair = new HashMap<>();

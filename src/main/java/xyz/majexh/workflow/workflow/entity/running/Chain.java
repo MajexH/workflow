@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import xyz.majexh.workflow.exceptions.BaseException;
 import xyz.majexh.workflow.exceptions.ExceptionEnum;
+import xyz.majexh.workflow.utils.JSONUtils;
+import xyz.majexh.workflow.utils.StringUtils;
 import xyz.majexh.workflow.workflow.entity.def.Node;
 import xyz.majexh.workflow.workflow.entity.def.Topology;
 import xyz.majexh.workflow.workflow.workflowEnum.State;
@@ -29,11 +31,12 @@ public class Chain {
     private HashMap<String, Task> taskMap;
     private HashMap<String, Long> tracing;
     // 这个地方要求所有的params的名字是独立的
-    private HashMap<String, JSON> params;
+    private HashMap<String, Object> params;
     // 保存当前失败的错误消息
     private String message;
 
     public Chain(Topology topology) {
+        this.id = StringUtils.getUUID();
         this.topology = topology;
         this.state = State.CREATED;
         this.taskMap = new HashMap<>();
@@ -54,8 +57,8 @@ public class Chain {
         this.taskMap.put(task.getId(), task);
     }
 
-    public void saveParams(HashMap<String, JSON> params) {
-        this.params.putAll(params);
+    public void saveParams(JSON params) {
+        this.params.putAll(JSONUtils.json2HashMap(params));
     }
 
     public boolean hasTask(String taskId) {

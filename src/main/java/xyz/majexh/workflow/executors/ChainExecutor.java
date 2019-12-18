@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.exceptions.BaseException;
 import xyz.majexh.workflow.exceptions.ExceptionEnum;
+import xyz.majexh.workflow.utils.JSONUtils;
+import xyz.majexh.workflow.utils.StringUtils;
 import xyz.majexh.workflow.workflow.entity.def.Node;
 import xyz.majexh.workflow.workflow.entity.def.Topology;
 import xyz.majexh.workflow.workflow.entity.running.Chain;
@@ -20,7 +22,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class TopologyExecutor {
+public class ChainExecutor {
 
     /**
      * 根据传入的拓扑和参数 生成第一个任务
@@ -28,7 +30,7 @@ public class TopologyExecutor {
      * @return 生成的第一个需要执行的任务
      * @throws BaseException 会传出失败的原因以更新chain的message字段和状态
      */
-    public Task getFirstTask(Chain chain, HashMap<String, JSON> inputParams) {
+    public Task getFirstTask(Chain chain, JSON inputParams) {
         Topology topology = chain.getTopology();
         String startId = topology.getStartNodeId();
         if (!topology.getNodeMap().containsKey(startId)) {
@@ -63,13 +65,13 @@ public class TopologyExecutor {
         // 执行到末尾
         if (taskId.equals(chain.getTopology().getEndNodeId())) {
             chain.changeState(State.FINISHED);
-            log.info(String.format("%s已经执行完毕", chain.getId()));
+            log.info(String.format("%s task reach the end of the chain", chain.getId()));
             return tasks;
         }
         Task task = chain.getTask(taskId);
-        String nodeId = taskId.split(":")[1];
+        String nodeId = StringUtils.extractNodeIdFromTaskId(taskId);
         for (String node : chain.getNextNodes(nodeId)) {
-            String newTaskId = String.format("%s:%s", chain.getId(), node);
+            String newTaskId = StringUtils.getTaskId(chain.getId(), node);
             if (chain.hasTask(newTaskId)) {
                 tasks.add(chain.getTask(taskId));
             } else {
@@ -97,16 +99,19 @@ public class TopologyExecutor {
      */
     private void fileSystemTaskArgs(String chainId, Task task) {
         if (task.getNodeType().isSameType(Type.SYSTEM_BARRIER)) {
-            HashMap<String, JSON> input = task.getInputParams();
+            // 拿到原来的输入
+            HashMap<String, Object> input = JSONUtils.json2HashMap(task.getInputParams());
             List<Object> res = new ArrayList<>();
-            // 不用再次检查required域里面的值 因为topology不会动态的更新
-            // 添加所有的运行时的taskId到barrier的inputParams["required"]中
-            if (!input.containsKey("required" + task.getId())) {
+            // 不用再次检查taskId域里面的值 因为topology不会动态的更新
+            // 添加所有的运行时的taskId到barrier的inputParams["taskId"]中
+            if (!input.containsKey(task.getId())) {
                 for (String id : task.getNodeSystemArgs()) {
-                    res.add(String.format("%s:%s", chainId, id));
+                    res.add(StringUtils.getTaskId(chainId, id));
                 }
-                input.put("required" + task.getId(), new JSONArray(res));
+                input.put(task.getId(), res);
             }
+            // 更新原来的输入
+            task.setInputParams(JSONUtils.hashMap2Json(input));
             log.debug(String.format("%s barrier add input params %s as required filed", task.getId(), res));
         }
     }

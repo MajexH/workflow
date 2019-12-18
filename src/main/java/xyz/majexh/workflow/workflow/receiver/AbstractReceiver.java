@@ -13,7 +13,7 @@ public abstract class AbstractReceiver {
     public abstract void getTask();
     public abstract void putTask();
 
-    public void doWork() {
+    public void doRetry() {
 
     }
 }

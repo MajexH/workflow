@@ -1,11 +1,14 @@
 package xyz.majexh.workflow.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 
 @Slf4j
 public class JSONUtils {
@@ -36,5 +39,13 @@ public class JSONUtils {
             }
         }
         return json;
+    }
+
+    public static HashMap<String, Object> json2HashMap(JSON params) {
+        return JSON.parseObject(params.toString(), new TypeReference<>(){});
+    }
+
+    public static JSON hashMap2Json(HashMap<String, Object> hashMap) {
+        return new JSONObject(hashMap);
     }
 }
