@@ -73,7 +73,7 @@ public class ChainExecutor {
             if (chain.hasTask(newTaskId)) {
                 tasks.add(chain.getTask(taskId));
             } else {
-                Node next = chain.getNode(nodeId);
+                Node next = chain.getNode(node);
                 HashMap<String, Object> input = new HashMap<>();
                 // TODO: 优化效率 因为现在扫描了两遍
                 if (!next.checkInputParams(JSONUtils.hashMap2Json(chain.getParams()))) {
