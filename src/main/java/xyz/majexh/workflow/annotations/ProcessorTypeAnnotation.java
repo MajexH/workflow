@@ -1,6 +1,7 @@
 package xyz.majexh.workflow.annotations;
 
 import org.springframework.core.annotation.AliasFor;
+import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.workflow.workflowEnum.Type;
 
 import java.lang.annotation.*;
@@ -12,6 +13,7 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
+@Component
 public @interface ProcessorTypeAnnotation {
 
     @AliasFor("type")

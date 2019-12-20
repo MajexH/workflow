@@ -1,8 +1,6 @@
-package xyz.majexh.workflow.executors;
+package xyz.majexh.workflow.workflow.executors;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.exceptions.BaseException;
@@ -75,15 +73,21 @@ public class ChainExecutor {
             if (chain.hasTask(newTaskId)) {
                 tasks.add(chain.getTask(taskId));
             } else {
-                Node current = chain.getNode(nodeId);
-                if (!current.checkInputParams(task.getOutputParams())) {
-                    log.error(String.format("%s output %s, cannot satisfy %s input params", taskId, task.getOutputParams(), current.getInputParams()));
+                Node next = chain.getNode(nodeId);
+                HashMap<String, Object> input = new HashMap<>();
+                // TODO: 优化效率 因为现在扫描了两遍
+                if (!next.checkInputParams(JSONUtils.hashMap2Json(chain.getParams()))) {
+                    log.error(String.format("%s's params %s, cannot satisfy %s input params", taskId, task.getOutputParams(), next.getInputParams()));
                     throw new BaseException(ExceptionEnum.OUTPUT_NOT_SATISFY);
+                } else {
+                    for (String key : next.getInputParams()) {
+                        input.put(key, chain.getParams().get(key));
+                    }
                 }
-                Task currentTask = new Task(current, chain.getId(), task.getOutputParams());
-                this.fileSystemTaskArgs(chain.getId(), currentTask);
-                chain.addTask(currentTask);
-                tasks.add(task);
+                Task nextTask = new Task(next, chain.getId(), JSONUtils.hashMap2Json(input));
+                this.fileSystemTaskArgs(chain.getId(), nextTask);
+                chain.saveTask(nextTask);
+                tasks.add(nextTask);
             }
         }
         log.debug(String.format("get next tasks success, which is %s", tasks));
@@ -101,7 +105,7 @@ public class ChainExecutor {
         if (task.getNodeType().isSameType(Type.SYSTEM_BARRIER)) {
             // 拿到原来的输入
             HashMap<String, Object> input = JSONUtils.json2HashMap(task.getInputParams());
-            List<Object> res = new ArrayList<>();
+            List<String> res = new ArrayList<>();
             // 不用再次检查taskId域里面的值 因为topology不会动态的更新
             // 添加所有的运行时的taskId到barrier的inputParams["taskId"]中
             if (!input.containsKey(task.getId())) {

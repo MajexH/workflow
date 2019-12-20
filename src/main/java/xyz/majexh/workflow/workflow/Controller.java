@@ -8,6 +8,7 @@ import xyz.majexh.workflow.workflow.entity.running.Chain;
 import xyz.majexh.workflow.workflow.message.MessageController;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -20,17 +21,17 @@ public class Controller {
         t.setDaemon(true);
         return t;
     });
-    private HashMap<String, Topology> topologies;
-    private HashMap<String, Chain> chainMap;
+    private ConcurrentHashMap<String, Topology> topologies;
+    private ConcurrentHashMap<String, Chain> chainMap;
     private MessageController zmqMessageControllerImpl;
 
     @Autowired
-    public void setTopologies(HashMap<String, Topology> topologies) {
+    public void setTopologies(ConcurrentHashMap<String, Topology> topologies) {
         this.topologies = topologies;
     }
 
     @Autowired
-    public void setChainMap(HashMap<String, Chain> chainMap) {
+    public void setChainMap(ConcurrentHashMap<String, Chain> chainMap) {
         this.chainMap = chainMap;
     }
 

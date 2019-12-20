@@ -51,4 +51,8 @@ public class Task {
     public List<String> getNodeSystemArgs() {
         return this.node.getSystemArgs();
     }
+
+    public int getRetryMax() {
+        return this.node.getRetryMax();
+    }
 }

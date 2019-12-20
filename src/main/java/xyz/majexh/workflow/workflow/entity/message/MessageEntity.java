@@ -13,11 +13,12 @@ import java.util.Arrays;
  * 定义如下
  * {
  *     "taskId": "",
- *     // "success" || "failed"
+ *     // "success" || "fail" || "pick"
  *     "status": "",
+ *     // failed message 作为错误消息
+ *     "message": "",
  *     // 返回给控制端的详细消息
  *     // success 其会传递给下一个task作为输入
- *     // failed 会读取res中的message字段 作为错误消息
  *     "res": {
  *
  *     }
@@ -29,14 +30,14 @@ public class MessageEntity implements Serializable {
 
     private String taskId;
     private String status;
+    private String message;
+    // 回来的数据 作为下一个任务的输入
     private JSON res;
 
     public static MessageEntity getMessageFromJSON(JSON json) {
-
         MessageEntity res = null;
         try {
             res = JSON.parseObject(json.toString(), MessageEntity.class);
-
         } catch (Exception e) {
             log.error(String.format("format message json error: %s", Arrays.toString(e.getStackTrace())));
             // TODO: Exception

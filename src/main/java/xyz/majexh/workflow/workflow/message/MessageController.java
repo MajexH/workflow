@@ -1,12 +1,15 @@
 package xyz.majexh.workflow.workflow.message;
 
+import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
+import xyz.majexh.workflow.workflow.entity.running.Task;
+
 public interface MessageController {
 
-    void putTask();
+    void putTask(Task task);
 
-    void putState();
+    void putState(MessageEntity message);
 
-    void getTask();
+    Task getTask();
 
-    void getState();
+    MessageEntity getRes();
 }

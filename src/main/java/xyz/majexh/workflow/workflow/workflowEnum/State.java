@@ -9,7 +9,6 @@ public enum State implements Serializable {
     CREATED("creat"),
     RUNNING("running"),
     FAIL("fail"),
-    PICK("pick"),
     FINISHED("finish"),
     IN_QUEUE("inQueue");
 

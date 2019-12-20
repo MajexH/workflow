@@ -76,8 +76,4 @@ public class Chain {
     public List<String> getNextNodes(String nodeId) {
         return this.topology.getNextNodes(nodeId);
     }
-
-    public void addTask(Task task) {
-        this.taskMap.put(task.getId(), task);
-    }
 }
