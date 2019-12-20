@@ -77,7 +77,6 @@ public class Worker implements Runnable {
         logger.debug(String.format("接受到%s %s任务", task.getId(), task.getNode().getName()));
         HashMap<String, Object> res1 = null;
         try {
-            System.out.println(map.get(task.getNode().getHandle()));
             res1 = (HashMap<String, Object>) map.get(task.getNode().getHandle()).invoke(this, JSONUtils.json2HashMap(task.getInputParams()));
             HashMap<String, Object> finalRes = res1;
             this.messageInterface.putState(new MessageEntity(){{
