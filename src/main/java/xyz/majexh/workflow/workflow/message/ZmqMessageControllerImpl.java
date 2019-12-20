@@ -16,6 +16,11 @@ public class ZmqMessageControllerImpl implements MessageController {
      */
     @Override
     public void putTask(Task task) {
+        // 重新提交任务 会造成问题
+        if (task.getState().isSameSate(State.FINISHED)) {
+            log.error(String.format("resubmit %s task to service after it finished", task.getId()));
+            return;
+        }
         // submit task到zmq中
         task.changeState(State.IN_QUEUE);
     }
