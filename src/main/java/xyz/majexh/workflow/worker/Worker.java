@@ -3,6 +3,8 @@ package xyz.majexh.workflow.worker;
 import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.utils.JSONUtils;
@@ -25,7 +27,10 @@ public class Worker implements Runnable {
 
     private static Logger logger = LoggerFactory.getLogger(Worker.class);
 
-    private MessageController messageInterface;
+    @Autowired
+    @Qualifier("memoryMessage")
+    public MessageController messageInterface;
+
     private HashMap<String, Method> map = new HashMap<>(){{
         Class<Worker> worker = Worker.class;
         try {
@@ -72,7 +77,8 @@ public class Worker implements Runnable {
         logger.debug(String.format("接受到%s %s任务", task.getId(), task.getNode().getName()));
         HashMap<String, Object> res1 = null;
         try {
-            res1 = (HashMap<String, Object>) map.get(task.getNode().getHandle()).invoke(this, task.getInputParams());
+            System.out.println(map.get(task.getNode().getHandle()));
+            res1 = (HashMap<String, Object>) map.get(task.getNode().getHandle()).invoke(this, JSONUtils.json2HashMap(task.getInputParams()));
             HashMap<String, Object> finalRes = res1;
             this.messageInterface.putState(new MessageEntity(){{
                 setStatus("success");
@@ -89,6 +95,7 @@ public class Worker implements Runnable {
                setRes(new JSONObject());
             }});
         }
+        System.out.println();
     }
 
     @Override

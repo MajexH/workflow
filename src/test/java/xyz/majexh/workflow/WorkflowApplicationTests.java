@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import xyz.majexh.workflow.annotations.ProcessorTypeAnnotation;
+import xyz.majexh.workflow.worker.Worker;
 import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
 import xyz.majexh.workflow.workflow.receiver.processor.Processor;
 import xyz.majexh.workflow.workflow.receiver.processor.ProcessorMapConstructor;
@@ -50,4 +51,11 @@ class WorkflowApplicationTests {
        System.out.println(map2);
     }
 
+    @Test
+    void testWorker() {
+        Worker worker1 = applicationContext.getBean("worker", Worker.class);
+        Worker worker2 = applicationContext.getBean("worker", Worker.class);
+        System.out.println(worker1 == worker2);
+        System.out.println(worker1.messageInterface == worker2.messageInterface);
+    }
 }

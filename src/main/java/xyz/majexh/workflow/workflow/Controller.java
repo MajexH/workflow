@@ -2,10 +2,14 @@ package xyz.majexh.workflow.workflow;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import xyz.majexh.workflow.workflow.builder.TopologyBuilder;
 import xyz.majexh.workflow.workflow.entity.def.Topology;
 import xyz.majexh.workflow.workflow.entity.running.Chain;
+import xyz.majexh.workflow.workflow.entity.running.Task;
 import xyz.majexh.workflow.workflow.message.MessageController;
+import xyz.majexh.workflow.workflow.receiver.Receiver;
 
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,7 +27,14 @@ public class Controller {
     });
     private ConcurrentHashMap<String, Topology> topologies;
     private ConcurrentHashMap<String, Chain> chainMap;
-    private MessageController zmqMessageControllerImpl;
+    private MessageController messageControllerImpl;
+    private Receiver receiver;
+    private TopologyBuilder builder;
+
+    @Autowired
+    public void setReceiver(Receiver receiver) {
+        this.receiver = receiver;
+    }
 
     @Autowired
     public void setTopologies(ConcurrentHashMap<String, Topology> topologies) {
@@ -36,12 +47,37 @@ public class Controller {
     }
 
     @Autowired
-    public void setZmqMessageControllerImpl(MessageController zmqMessageControllerImpl) {
-        this.zmqMessageControllerImpl = zmqMessageControllerImpl;
+    @Qualifier("memoryMessage")
+    public void setMessageControllerImpl(MessageController messageController) {
+        this.messageControllerImpl = messageController;
     }
 
-    public void submitTask() {
+    @Autowired
+    public void setBuilder(TopologyBuilder builder) {
+        this.builder = builder;
+    }
 
+    private void loadTopology() {
+        this.topologies.putAll(this.builder.loadTopologies());
+    }
+
+    public Chain createChain(String name) {
+        Chain chain = new Chain(this.topologies.get(name));
+        this.chainMap.put(chain.getId(), chain);
+        log.info(String.format("%s chain has been created", chain.getId()));
+        return chain;
+    }
+
+    private void recv() {
+        ex.submit(() -> {
+            while (true) {
+                receiver.receiveMessage();
+            }
+        });
+    }
+
+    public void submitTask(Task task) {
+        this.messageControllerImpl.putTask(task);
     }
 
     public void restartTask() {
@@ -50,5 +86,10 @@ public class Controller {
 
     public void monitor() {
 
+    }
+
+    public void start() {
+        this.loadTopology();
+        this.recv();
     }
 }

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public class JSONUtils {
@@ -45,7 +46,7 @@ public class JSONUtils {
         return JSON.parseObject(params.toString(), new TypeReference<>(){});
     }
 
-    public static JSON hashMap2Json(HashMap<String, Object> hashMap) {
+    public static JSON hashMap2Json(Map<String, Object> hashMap) {
         return new JSONObject(hashMap);
     }
 }

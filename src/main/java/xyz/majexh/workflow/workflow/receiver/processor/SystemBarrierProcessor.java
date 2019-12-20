@@ -3,6 +3,7 @@ package xyz.majexh.workflow.workflow.receiver.processor;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import xyz.majexh.workflow.annotations.ProcessorTypeAnnotation;
 import xyz.majexh.workflow.utils.JSONUtils;
 import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
@@ -22,6 +23,7 @@ public class SystemBarrierProcessor implements Processor {
     private MessageController messageController;
 
     @Autowired
+    @Qualifier("memoryMessage")
     public void setMessageController(MessageController messageController) {
         this.messageController = messageController;
     }

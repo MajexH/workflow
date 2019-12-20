@@ -3,6 +3,7 @@ package xyz.majexh.workflow.workflow.message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
 import xyz.majexh.workflow.workflow.entity.running.Task;
@@ -11,6 +12,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 @Component
 @Slf4j
+@Qualifier("memoryMessage")
+@Primary
 public class MemoryControllerImpl implements MessageController {
 
     @Autowired

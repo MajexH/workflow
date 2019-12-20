@@ -2,6 +2,7 @@ package xyz.majexh.workflow.workflow.receiver;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.utils.MessageUtils;
 import xyz.majexh.workflow.utils.StringUtils;
@@ -32,6 +33,7 @@ public class Receiver {
     private ChainExecutor executor;
 
     @Autowired
+    @Qualifier("memoryMessage")
     public void setMessageController(MessageController messageController) {
         this.messageController = messageController;
     }

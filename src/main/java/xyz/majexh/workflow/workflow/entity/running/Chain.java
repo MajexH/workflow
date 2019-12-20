@@ -14,6 +14,7 @@ import xyz.majexh.workflow.workflow.workflowEnum.State;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 
@@ -28,10 +29,10 @@ public class Chain {
     // 当前链对应的topology
     private Topology topology;
     private State state;
-    private HashMap<String, Task> taskMap;
-    private HashMap<String, Long> tracing;
+    private ConcurrentHashMap<String, Task> taskMap;
+    private ConcurrentHashMap<String, Long> tracing;
     // 这个地方要求所有的params的名字是独立的
-    private HashMap<String, Object> params;
+    private ConcurrentHashMap<String, Object> params;
     // 保存当前失败的错误消息
     private String message;
 
@@ -39,10 +40,11 @@ public class Chain {
         this.id = StringUtils.getUUID();
         this.topology = topology;
         this.state = State.CREATED;
-        this.taskMap = new HashMap<>();
-        this.tracing = new HashMap<>(){{
+        this.taskMap = new ConcurrentHashMap<>();
+        this.tracing = new ConcurrentHashMap<>(){{
             put(state.getStateName(), new Date().getTime());
         }};
+        this.params = new ConcurrentHashMap<>();
     }
 
     // TODO: AOP hook
