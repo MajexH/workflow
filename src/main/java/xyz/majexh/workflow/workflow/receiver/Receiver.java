@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import xyz.majexh.workflow.utils.JSONUtils;
 import xyz.majexh.workflow.utils.MessageUtils;
 import xyz.majexh.workflow.utils.StringUtils;
 import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
@@ -15,6 +16,8 @@ import xyz.majexh.workflow.workflow.receiver.processor.Processor;
 import xyz.majexh.workflow.workflow.workflowEnum.State;
 import xyz.majexh.workflow.workflow.workflowEnum.Type;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -63,6 +66,7 @@ public class Receiver {
 
 
     private void submit(Task task) {
+        log.debug("receiver resubmit task" + task.getId());
         this.messageController.putTask(task);
     }
 
@@ -82,7 +86,8 @@ public class Receiver {
         chain.saveParams(entity.getRes());
         task.changeState(State.FINISHED);
         log.info(String.format("%s task success finish", task.getId()));
-        for (Task nextTask : this.executor.getNextTasks(chain, task.getId())) {
+        List<Task> tasks = this.executor.getNextTasks(chain, task.getId());
+        for (Task nextTask : tasks) {
             log.debug(String.format("new task %s generate", nextTask.getId()));
             Processor processor = this.processorMap.get(nextTask.getNodeType());
             if (processor == null) {
@@ -98,6 +103,7 @@ public class Receiver {
      */
     public void receiveMessage() {
         MessageEntity message = this.getRes();
+
         if (message.getTaskId() == null) {
             log.error("error: receive response without taskId filed");
             return;
@@ -116,6 +122,9 @@ public class Receiver {
             task.changeState(State.RUNNING);
         } else if (MessageUtils.isSuccess(message)) {
             log.info(String.format("receive \"success\" status of task %s", message.getTaskId()));
+
+            System.out.println(2 + "" + message);
+
             this.process(chain, task, message);
         } else if (MessageUtils.isFail(message)) {
             if (task.getRetry() < task.getRetryMax()) {

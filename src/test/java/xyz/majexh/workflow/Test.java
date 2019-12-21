@@ -38,7 +38,7 @@ public class Test {
             return t;
         });
 
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 1; i++)
             ex.submit(applicationContext.getBean("worker", Worker.class));
         for (int i = 0; i < 1; i++) {
             Chain c = controller.createChain("GNSS");

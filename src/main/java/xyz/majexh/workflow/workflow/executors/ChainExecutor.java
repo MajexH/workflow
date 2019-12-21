@@ -66,7 +66,6 @@ public class ChainExecutor {
             log.info(String.format("%s task reach the end of the chain", chain.getId()));
             return tasks;
         }
-        Task task = chain.getTask(taskId);
         String nodeId = StringUtils.extractNodeIdFromTaskId(taskId);
         for (String node : chain.getNextNodes(nodeId)) {
             String newTaskId = StringUtils.getTaskId(chain.getId(), node);
@@ -76,8 +75,10 @@ public class ChainExecutor {
                 Node next = chain.getNode(node);
                 HashMap<String, Object> input = new HashMap<>();
                 // TODO: 优化效率 因为现在扫描了两遍
+                // TODO: e param 没找到 说明 success没有把e加进去
+
                 if (!next.checkInputParams(JSONUtils.hashMap2Json(chain.getParams()))) {
-                    log.error(String.format("%s's params %s, cannot satisfy %s input params", taskId, task.getOutputParams(), next.getInputParams()));
+                    log.error(String.format("%s's params %s, cannot satisfy %s input params", taskId, chain.getParams(), next.getInputParams()));
                     throw new BaseException(ExceptionEnum.OUTPUT_NOT_SATISFY);
                 } else {
                     for (String key : next.getInputParams()) {

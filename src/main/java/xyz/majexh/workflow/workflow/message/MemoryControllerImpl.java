@@ -55,7 +55,7 @@ public class MemoryControllerImpl implements MessageController {
     public MessageEntity getRes() {
         MessageEntity res = null;
         try {
-            res = this.messageQueue.take();;
+            res = this.messageQueue.take();
         } catch (Exception e) {
             log.error("cannot get there");
         }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.utils.JSONUtils;
+import xyz.majexh.workflow.utils.StringUtils;
 import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
 import xyz.majexh.workflow.workflow.entity.running.Task;
 import xyz.majexh.workflow.workflow.message.MessageController;
@@ -51,7 +52,7 @@ public class Worker implements Runnable {
 
     public HashMap<String, Object> handle2(HashMap<String, Object> inputParams) {
         return new HashMap<>(){{
-            put("d", (Integer) inputParams.get("a") + 1);
+            put("d", (Integer) inputParams.get("c") + 1);
         }};
     }
 
@@ -61,9 +62,10 @@ public class Worker implements Runnable {
         if (r.nextDouble() > 0.5d) {
             throw new RuntimeException("任务执行失败");
         }
-        return new HashMap<>(){{
+        HashMap<String, Object> map = new HashMap<>(){{
             put("e", (Integer) inputParams.get("c") - 1);
         }};
+        return map;
     }
 
     public HashMap<String, Object> handle4(HashMap<String, Object> inputParams) {
@@ -78,15 +80,20 @@ public class Worker implements Runnable {
         HashMap<String, Object> res1 = null;
         try {
             res1 = (HashMap<String, Object>) map.get(task.getNode().getHandle()).invoke(this, JSONUtils.json2HashMap(task.getInputParams()));
+
+
+
             HashMap<String, Object> finalRes = res1;
-            this.messageInterface.putState(new MessageEntity(){{
+            MessageEntity entity = new MessageEntity(){{
                 setStatus("success");
                 setRes(JSONUtils.hashMap2Json(finalRes));
                 setTaskId(task.getId());
                 setMessage("");
-            }});
-        } catch (IllegalAccessException | InvocationTargetException e) {
+            }};
+            this.messageInterface.putState(entity);
+        } catch (Exception e) {
             logger.error(Arrays.toString(e.getStackTrace()));
+            e.printStackTrace();
             this.messageInterface.putState(new MessageEntity(){{
                setStatus("fail");
                setMessage(e.getMessage());
@@ -94,7 +101,6 @@ public class Worker implements Runnable {
                setRes(new JSONObject());
             }});
         }
-        System.out.println();
     }
 
     @Override

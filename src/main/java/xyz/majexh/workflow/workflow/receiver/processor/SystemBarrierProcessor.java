@@ -45,13 +45,13 @@ public class SystemBarrierProcessor implements Processor {
                 log.debug(String.format("barrier %s don't satisfy because of the pre task %s not finish", task.getId(), preTaskId));
                 return;
             }
-            this.messageController.putState(new MessageEntity(){{
-                setStatus("success");
-                setTaskId(task.getId());
-                setRes(new JSONObject());
-                setMessage("");
-            }});
         }
+        this.messageController.putState(new MessageEntity(){{
+            setStatus("success");
+            setTaskId(task.getId());
+            setRes(new JSONObject());
+            setMessage("");
+        }});
         log.info("barrier pass");
     }
 }
