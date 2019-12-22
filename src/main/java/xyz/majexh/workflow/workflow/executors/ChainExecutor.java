@@ -60,24 +60,23 @@ public class ChainExecutor {
             throw new BaseException(ExceptionEnum.TASK_NOT_FOUND);
         }
         List<Task> tasks = new ArrayList<>();
+        String nodeId = StringUtils.extractNodeIdFromTaskId(taskId);
         // 执行到末尾
-        if (taskId.equals(chain.getTopology().getEndNodeId())) {
+        if (nodeId.equals(chain.getTopology().getEndNodeId())) {
             chain.changeState(State.FINISHED);
             log.info(String.format("%s task reach the end of the chain", chain.getId()));
             return tasks;
         }
-        Task task = chain.getTask(taskId);
-        String nodeId = StringUtils.extractNodeIdFromTaskId(taskId);
         for (String node : chain.getNextNodes(nodeId)) {
             String newTaskId = StringUtils.getTaskId(chain.getId(), node);
             if (chain.hasTask(newTaskId)) {
-                tasks.add(chain.getTask(taskId));
+                tasks.add(chain.getTask(newTaskId));
             } else {
                 Node next = chain.getNode(node);
                 HashMap<String, Object> input = new HashMap<>();
                 // TODO: 优化效率 因为现在扫描了两遍
                 if (!next.checkInputParams(JSONUtils.hashMap2Json(chain.getParams()))) {
-                    log.error(String.format("%s's params %s, cannot satisfy %s input params", taskId, task.getOutputParams(), next.getInputParams()));
+                    log.error(String.format("%s's params %s, cannot satisfy %s input params", taskId, chain.getParams(), next.getInputParams()));
                     throw new BaseException(ExceptionEnum.OUTPUT_NOT_SATISFY);
                 } else {
                     for (String key : next.getInputParams()) {
