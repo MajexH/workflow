@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationContext;
 import xyz.majexh.workflow.utils.JSONUtils;
 import xyz.majexh.workflow.worker.Worker;
 import xyz.majexh.workflow.workflow.Controller;
+import xyz.majexh.workflow.workflow.entity.def.Topology;
 import xyz.majexh.workflow.workflow.entity.running.Chain;
 import xyz.majexh.workflow.workflow.entity.running.Task;
 import xyz.majexh.workflow.workflow.executors.ChainExecutor;
@@ -13,6 +14,7 @@ import xyz.majexh.workflow.workflow.executors.ChainExecutor;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -28,6 +30,11 @@ public class Test {
     @Autowired
     Controller controller;
 
+    @Autowired
+    ConcurrentHashMap<String, Chain> chainMap;
+
+    @Autowired
+    ConcurrentHashMap<String, Topology> topologyMap;
 
     @org.junit.jupiter.api.Test
     public void test() throws InterruptedException {
@@ -38,7 +45,7 @@ public class Test {
             return t;
         });
 
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 6; i++)
             ex.submit(applicationContext.getBean("worker", Worker.class));
         for (int i = 0; i < 1; i++) {
             Chain c = controller.createChain("GNSS");
@@ -50,6 +57,9 @@ public class Test {
             }}));
             controller.submitTask(task);
         }
+
+        System.out.println(chainMap);
+        System.out.println(topologyMap);
         Thread.sleep(3000000);
     }
 

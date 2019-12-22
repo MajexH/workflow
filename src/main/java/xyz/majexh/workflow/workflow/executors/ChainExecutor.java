@@ -61,16 +61,18 @@ public class ChainExecutor {
         }
         List<Task> tasks = new ArrayList<>();
         // 执行到末尾
-        if (taskId.equals(chain.getTopology().getEndNodeId())) {
+        // TODO: master中修改bug
+        String nodeId = StringUtils.extractNodeIdFromTaskId(taskId);
+        if (nodeId.equals(chain.getTopology().getEndNodeId())) {
             chain.changeState(State.FINISHED);
             log.info(String.format("%s task reach the end of the chain", chain.getId()));
             return tasks;
         }
-        String nodeId = StringUtils.extractNodeIdFromTaskId(taskId);
         for (String node : chain.getNextNodes(nodeId)) {
             String newTaskId = StringUtils.getTaskId(chain.getId(), node);
             if (chain.hasTask(newTaskId)) {
-                tasks.add(chain.getTask(taskId));
+                // TODO: fix bugs
+                tasks.add(chain.getTask(newTaskId));
             } else {
                 Node next = chain.getNode(node);
                 HashMap<String, Object> input = new HashMap<>();

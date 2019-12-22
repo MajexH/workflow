@@ -57,11 +57,10 @@ public class Worker implements Runnable {
     }
 
     public HashMap<String, Object> handle3(HashMap<String, Object> inputParams) {
-        Random r = new Random();
-        r.nextInt();
-        if (r.nextDouble() > 0.5d) {
-            throw new RuntimeException("任务执行失败");
-        }
+//        Random r = new Random();
+//        if (r.nextDouble() > 0.5d) {
+//            throw new RuntimeException("任务执行失败");
+//        }
         HashMap<String, Object> map = new HashMap<>(){{
             put("e", (Integer) inputParams.get("c") - 1);
         }};

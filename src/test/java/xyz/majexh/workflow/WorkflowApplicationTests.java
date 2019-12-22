@@ -58,4 +58,11 @@ class WorkflowApplicationTests {
         System.out.println(worker1 == worker2);
         System.out.println(worker1.messageInterface == worker2.messageInterface);
     }
+
+    @Test
+    void testRandom() {
+        for (int i = 0; i < 10; i++) {
+            System.out.println(new Random().nextDouble() > 0.5d);
+        }
+    }
 }
