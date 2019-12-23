@@ -35,6 +35,8 @@ public class Node {
     public Node() {
         this.retryMax = ConfigGetter.getRetryMax();
         this.retryDelta = ConfigGetter.getRetryDelta();
+        this.inputParams = new ArrayList<>();
+        this.outputParams = new ArrayList<>();
         this.systemArgs = new ArrayList<>();
         // 默认构造一个属于user的节点
         this.type = Type.USER;

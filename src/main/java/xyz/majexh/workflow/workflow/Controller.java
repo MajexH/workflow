@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.workflow.builder.TopologyBuilder;
 import xyz.majexh.workflow.workflow.entity.def.Topology;
 import xyz.majexh.workflow.workflow.entity.running.Chain;
+import xyz.majexh.workflow.workflow.entity.running.Task;
 import xyz.majexh.workflow.workflow.message.MessageController;
 import xyz.majexh.workflow.workflow.receiver.Receiver;
 
@@ -25,7 +26,7 @@ public class Controller {
     });
     private ConcurrentHashMap<String, Topology> topologies;
     private ConcurrentHashMap<String, Chain> chainMap;
-    private MessageController zmqMessageControllerImpl;
+    private MessageController messageControllerImpl;
     private Receiver receiver;
     private TopologyBuilder builder;
 
@@ -45,8 +46,8 @@ public class Controller {
     }
 
     @Autowired
-    public void setZmqMessageControllerImpl(MessageController zmqMessageControllerImpl) {
-        this.zmqMessageControllerImpl = zmqMessageControllerImpl;
+    public void setZmqMessageControllerImpl(MessageController messageControllerImpl) {
+        this.messageControllerImpl = messageControllerImpl;
     }
 
     @Autowired
@@ -72,8 +73,8 @@ public class Controller {
         });
     }
 
-    public void submitTask() {
-
+    public void submitTask(Task task) {
+        this.messageControllerImpl.putTask(task);
     }
 
     public void restartTask() {

@@ -61,6 +61,7 @@ public class Receiver {
 
 
     private void submit(Task task) {
+        log.debug("receiver resubmit task" + task.getId());
         this.messageController.putTask(task);
     }
 
