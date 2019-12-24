@@ -47,7 +47,7 @@ public class Test {
 
         for (int i = 0; i < 6; i++)
             ex.submit(applicationContext.getBean("worker", Worker.class));
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 10; i++) {
             Chain c = controller.createChain("GNSS");
 
             Task task = executor.getFirstTask(c, JSONUtils.hashMap2Json(new HashMap<>() {{

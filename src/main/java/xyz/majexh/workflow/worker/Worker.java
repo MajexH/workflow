@@ -57,10 +57,11 @@ public class Worker implements Runnable {
     }
 
     public HashMap<String, Object> handle3(HashMap<String, Object> inputParams) {
-//        Random r = new Random();
+        Random r = new Random();
 //        if (r.nextDouble() > 0.5d) {
-//            throw new RuntimeException("任务执行失败");
-//        }
+        if (true) {
+            throw new RuntimeException("任务执行失败");
+        }
         HashMap<String, Object> map = new HashMap<>(){{
             put("e", (Integer) inputParams.get("c") - 1);
         }};
@@ -79,8 +80,6 @@ public class Worker implements Runnable {
         HashMap<String, Object> res1 = null;
         try {
             res1 = (HashMap<String, Object>) map.get(task.getNode().getHandle()).invoke(this, JSONUtils.json2HashMap(task.getInputParams()));
-
-
 
             HashMap<String, Object> finalRes = res1;
             MessageEntity entity = new MessageEntity(){{
