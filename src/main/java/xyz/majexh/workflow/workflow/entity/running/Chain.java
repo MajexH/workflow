@@ -3,8 +3,6 @@ package xyz.majexh.workflow.workflow.entity.running;
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import xyz.majexh.workflow.exceptions.BaseException;
-import xyz.majexh.workflow.exceptions.ExceptionEnum;
 import xyz.majexh.workflow.utils.JSONUtils;
 import xyz.majexh.workflow.utils.StringUtils;
 import xyz.majexh.workflow.workflow.entity.def.Node;
@@ -12,11 +10,8 @@ import xyz.majexh.workflow.workflow.entity.def.Topology;
 import xyz.majexh.workflow.workflow.workflowEnum.State;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.function.Function;
 
 /**
  * topology被启动后形成chain

@@ -25,6 +25,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @SpringBootTest
 class WorkflowApplicationTests {
 
+
+    @Autowired
+    private xyz.majexh.workflow.Test test1;
+
+
     @Autowired
     ApplicationContext applicationContext;
 
@@ -48,6 +53,11 @@ class WorkflowApplicationTests {
        }};
        map1.putAll(map2);
        System.out.println(map2);
+    }
+
+    @Test
+    void testHello() {
+        test1.testHello();
     }
 
 }

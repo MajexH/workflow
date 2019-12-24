@@ -1,8 +1,13 @@
 package xyz.majexh.workflow;
 
-import xyz.majexh.workflow.annotations.ProcessorTypeAnnotation;
-import xyz.majexh.workflow.workflow.workflowEnum.Type;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@ProcessorTypeAnnotation(Type.SYSTEM_BARRIER)
+@Component
 public class Test {
+
+    public void testHello() {
+        System.out.println("hello");
+    }
+
 }
