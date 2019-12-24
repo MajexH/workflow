@@ -2,9 +2,11 @@ package xyz.majexh.workflow.workflow.executors;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.exceptions.BaseException;
 import xyz.majexh.workflow.exceptions.ExceptionEnum;
+import xyz.majexh.workflow.service.AopService;
 import xyz.majexh.workflow.utils.JSONUtils;
 import xyz.majexh.workflow.utils.StringUtils;
 import xyz.majexh.workflow.workflow.entity.def.Node;
@@ -21,6 +23,13 @@ import java.util.List;
 @Component
 @Slf4j
 public class ChainExecutor {
+
+    private AopService aopService;
+
+    @Autowired
+    public void setAopService(AopService aopService) {
+        this.aopService = aopService;
+    }
 
     /**
      * 根据传入的拓扑和参数 生成第一个任务
@@ -41,8 +50,8 @@ public class ChainExecutor {
         }
         Task temp = new Task(firstNode, chain.getId(), inputParams);
         chain.saveTask(temp);
-        // 获取到了第一个任务后 会立即执行整个链的开始
-        chain.changeState(State.RUNNING);
+        // 获取到了第一个任务后 会立即执行整个链的开始 chain.changeState(State.RUNNING);
+        this.aopService.changeState(chain, State.RUNNING);
         chain.saveParams(inputParams);
         return temp;
     }
@@ -63,7 +72,8 @@ public class ChainExecutor {
         String nodeId = StringUtils.extractNodeIdFromTaskId(taskId);
         // 执行到末尾
         if (nodeId.equals(chain.getTopology().getEndNodeId())) {
-            chain.changeState(State.FINISHED);
+            // chain.changeState(State.FINISHED);
+            this.aopService.changeState(chain, State.FINISHED);
             log.info(String.format("%s task reach the end of the chain", chain.getId()));
             return tasks;
         }

@@ -3,6 +3,7 @@ package xyz.majexh.workflow.workflow.receiver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import xyz.majexh.workflow.service.AopService;
 import xyz.majexh.workflow.utils.MessageUtils;
 import xyz.majexh.workflow.utils.StringUtils;
 import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
@@ -30,6 +31,12 @@ public class Receiver {
     private MessageController messageController;
     private ConcurrentHashMap<Type, Processor> processorMap;
     private ChainExecutor executor;
+    private AopService aopService;
+
+    @Autowired
+    public void setAopService(AopService aopService) {
+        this.aopService = aopService;
+    }
 
     @Autowired
     public void setMessageController(MessageController messageController) {
@@ -79,7 +86,8 @@ public class Receiver {
         task.setOutputParams(entity.getRes());
         // 保存当前的输出
         chain.saveParams(entity.getRes());
-        task.changeState(State.FINISHED);
+        // task.changeState(State.FINISHED);
+        this.aopService.changeState(task, State.FINISHED);
         log.info(String.format("%s task success finish", task.getId()));
         for (Task nextTask : this.executor.getNextTasks(chain, task.getId())) {
             log.debug(String.format("new task %s generate", nextTask.getId()));
@@ -112,7 +120,8 @@ public class Receiver {
                 return;
             }
             // 如果worker已经拿到了message,则说明任务已经开始运行
-            task.changeState(State.RUNNING);
+            // task.changeState(State.RUNNING);
+            this.aopService.changeState(task, State.RUNNING);
         } else if (MessageUtils.isSuccess(message)) {
             log.info(String.format("receive \"success\" status of task %s", message.getTaskId()));
             this.process(chain, task, message);
@@ -123,9 +132,10 @@ public class Receiver {
                 this.submit(task);
                 log.info(String.format("%s task resubmit, retry count = %d", task.getId(), task.getRetry()));
             } else {
-                task.changeState(State.FAIL);
-                // 传递失败消息
-                chain.changeState(State.FAIL);
+                // task.changeState(State.FAIL);
+                this.aopService.changeState(task, State.FAIL);
+                // 传递失败消息 chain.changeState(State.FAIL);
+                this.aopService.changeState(chain, State.FAIL);
                 chain.setMessage(message.getMessage());
                 log.debug(String.format("chain %s fail because of %s task fail, fail message: %s", chain.getId(), task.getId(), message.getMessage()));
             }

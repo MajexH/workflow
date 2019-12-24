@@ -12,7 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import xyz.majexh.workflow.annotations.ProcessorTypeAnnotation;
+import xyz.majexh.workflow.service.AopService;
+import xyz.majexh.workflow.workflow.entity.def.Node;
 import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
+import xyz.majexh.workflow.workflow.entity.running.Task;
 import xyz.majexh.workflow.workflow.receiver.processor.Processor;
 import xyz.majexh.workflow.workflow.receiver.processor.ProcessorMapConstructor;
 import xyz.majexh.workflow.workflow.receiver.processor.SystemBarrierProcessor;
@@ -25,10 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @SpringBootTest
 class WorkflowApplicationTests {
 
-
     @Autowired
-    private xyz.majexh.workflow.Test test1;
-
+    AopService service;
 
     @Autowired
     ApplicationContext applicationContext;
@@ -57,7 +58,12 @@ class WorkflowApplicationTests {
 
     @Test
     void testHello() {
-        test1.testHello();
+
+        Task task = new Task(new Node(), "1", new JSONObject());
+        System.out.println(task.getState());
+        service.changeState(task, State.FINISHED);
+
+        System.out.println(task.getState());
     }
 
 }
