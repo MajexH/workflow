@@ -44,16 +44,17 @@ class WorkflowApplicationTests {
 
     @Test
     void testMap() {
-       HashMap<String, Integer> map1 = new HashMap<>(){{
-           put("1", 1);
-           put("2", 2);
-       }}, map2 = new HashMap<>(){{
-           put("1", 2);
-           put("2", 1);
-           put("3", 3);
-       }};
-       map1.putAll(map2);
-       System.out.println(map2);
+        HashMap<String, Integer> map1 = new HashMap<>() {{
+            put("1", 1);
+            put("2", 2);
+        }}, map2 = new HashMap<>() {{
+            put("1", 2);
+            put("2", 1);
+            put("3", 3);
+        }};
+        map1.putAll(map2);
+        System.out.println(map2);
+        System.out.println(map2.get("5"));
     }
 
     @Test
@@ -65,5 +66,4 @@ class WorkflowApplicationTests {
 
         System.out.println(task.getState());
     }
-
 }

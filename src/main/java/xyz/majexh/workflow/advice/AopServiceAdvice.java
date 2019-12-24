@@ -1,4 +1,4 @@
-package xyz.majexh.workflow.Advice;
+package xyz.majexh.workflow.advice;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
