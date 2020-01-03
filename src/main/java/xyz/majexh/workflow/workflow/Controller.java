@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.utils.StringUtils;
@@ -15,6 +17,7 @@ import xyz.majexh.workflow.workflow.executors.ChainExecutor;
 import xyz.majexh.workflow.workflow.message.MessageController;
 import xyz.majexh.workflow.workflow.receiver.Receiver;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +27,7 @@ import java.util.concurrent.Executors;
 
 @Component
 @Slf4j
-public class Controller {
+public class Controller implements ApplicationRunner {
 
     private ExecutorService ex = Executors.newCachedThreadPool((runnable) -> {
         Thread t = new Thread(runnable);
@@ -108,6 +111,19 @@ public class Controller {
         return new ArrayList<>(this.chainMap.get(chainId).getTaskMap().values());
     }
 
+    public List<Topology> getAllTopology() {
+        return new ArrayList<>(this.topologies.values());
+    }
+
+    /**
+     * 现在topologies的map，key为topology的name
+     * @param topologyName
+     * @return
+     */
+    public Topology getTopologyByName(String topologyName) {
+        return this.topologies.get(topologyName);
+    }
+
     /**
      * load预定义的json文件
      * 同事启动接受线程
@@ -141,5 +157,11 @@ public class Controller {
             log.error(String.format("the task %s submitted to restart is not found", taskId));
         }
         this.submitTask(taskId);
+    }
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        log.info("controller start up");
+        this.start();
     }
 }

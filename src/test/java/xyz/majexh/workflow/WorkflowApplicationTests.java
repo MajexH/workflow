@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import xyz.majexh.workflow.annotations.ProcessorTypeAnnotation;
 import xyz.majexh.workflow.service.AopService;
+import xyz.majexh.workflow.workflow.Controller;
 import xyz.majexh.workflow.workflow.entity.def.Node;
 import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
 import xyz.majexh.workflow.workflow.entity.running.Task;
@@ -37,6 +38,9 @@ class WorkflowApplicationTests {
     @Autowired
     ConcurrentHashMap<Type, Processor> map;
 
+    @Autowired
+    Controller controller;
+
     @Test
     void contextLoads() {
         System.out.println(String.format("%d", 1));
@@ -55,6 +59,12 @@ class WorkflowApplicationTests {
         map1.putAll(map2);
         System.out.println(map2);
         System.out.println(map2.get("5"));
+    }
+
+    @Test
+    void testController() {
+        this.controller.start();
+        System.out.println(this.controller.getAllTopology());
     }
 
     @Test

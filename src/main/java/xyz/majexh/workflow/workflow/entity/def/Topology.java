@@ -1,5 +1,6 @@
 package xyz.majexh.workflow.workflow.entity.def;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
@@ -22,6 +23,7 @@ public class Topology {
     private String startNodeId;
     private String endNodeId;
     // topology的所有节点
+    @JsonIgnore
     private HashMap<String, Node> nodeMap;
     // topology的所有图谱关系
     private HashMap<String, List<String>> edgePair;

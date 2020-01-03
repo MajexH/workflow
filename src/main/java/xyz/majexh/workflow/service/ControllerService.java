@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.majexh.workflow.domain.ChainRes;
 import xyz.majexh.workflow.domain.TaskRes;
+import xyz.majexh.workflow.domain.TopologyRes;
 import xyz.majexh.workflow.utils.StringUtils;
 import xyz.majexh.workflow.workflow.Controller;
 import xyz.majexh.workflow.workflow.entity.def.Topology;
@@ -18,18 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ControllerService implements ControllerServiceInterface {
 
     private Controller controller;
-    private ConcurrentHashMap<String, Chain> chainMap;
-    private ConcurrentHashMap<String, Topology> topologyMap;
-
-    @Autowired
-    public void setTopologyMap(ConcurrentHashMap<String, Topology> topologyMap) {
-        this.topologyMap = topologyMap;
-    }
-
-    @Autowired
-    public void setChainMap(ConcurrentHashMap<String, Chain> chainMap) {
-        this.chainMap = chainMap;
-    }
 
     @Autowired
     public void setController(Controller controller) {
@@ -72,6 +61,20 @@ public class ControllerService implements ControllerServiceInterface {
     @Override
     public Task getTask(String taskId) throws Exception {
         return this.controller.getChain(StringUtils.extractChainIdFromTaskId(taskId)).getTaskMap().get(taskId);
+    }
+
+    @Override
+    public List<TopologyRes> getAllTopology() throws Exception {
+        List<TopologyRes> res = new ArrayList<>();
+        for (Topology temp : this.controller.getAllTopology()) {
+            res.add(new TopologyRes(temp.getId(), temp.getName(), temp.getStartNodeId(), temp.getEndNodeId()));
+        }
+        return res;
+    }
+
+    @Override
+    public Topology getTopologyByName(String topologyName) throws Exception {
+        return this.controller.getTopologyByName(topologyName);
     }
 
 

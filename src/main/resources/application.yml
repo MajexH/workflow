@@ -4,3 +4,5 @@ workflow:
 logging:
   level:
     xyz.majexh.workflow: debug
+server:
+  port: 8081
