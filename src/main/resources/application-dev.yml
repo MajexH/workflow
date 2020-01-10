@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://10.2.9.18:3306/GNSS?characterEncoding=utf-8&allowMultiQueries=true
+    username: remote
+    password: Asd564335
+  jpa:
+    show-sql: true

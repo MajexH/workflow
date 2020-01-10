@@ -12,7 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import xyz.majexh.workflow.annotations.ProcessorTypeAnnotation;
+import xyz.majexh.workflow.dao.UserDao;
 import xyz.majexh.workflow.service.AopService;
+import xyz.majexh.workflow.utils.JwtUtils;
 import xyz.majexh.workflow.workflow.Controller;
 import xyz.majexh.workflow.workflow.entity.def.Node;
 import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
@@ -40,6 +42,15 @@ class WorkflowApplicationTests {
 
     @Autowired
     Controller controller;
+
+    @Autowired
+    UserDao userDao;
+
+    @Test
+    void testUserDao() {
+        System.out.println(userDao.findUserByUsernameEquals("123"));
+        System.out.println(userDao.findUserByUsernameEquals(""));
+    }
 
     @Test
     void contextLoads() {
