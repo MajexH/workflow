@@ -20,4 +20,13 @@ public class StringUtils {
         return taskId.split(":")[0];
     }
 
+    /**
+     * check the str is null or ''
+     * @param str
+     * @return
+     */
+    public static boolean checkNone(String str) {
+        return str == null || str.equals("");
+    }
+
 }

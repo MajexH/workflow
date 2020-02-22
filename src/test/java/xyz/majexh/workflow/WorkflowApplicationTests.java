@@ -3,6 +3,9 @@ package xyz.majexh.workflow;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.assertj.core.util.diff.Delta;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
@@ -11,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import xyz.majexh.workflow.annotations.ProcessorTypeAnnotation;
 import xyz.majexh.workflow.dao.UserDao;
 import xyz.majexh.workflow.service.AopService;
@@ -25,6 +30,7 @@ import xyz.majexh.workflow.workflow.receiver.processor.SystemBarrierProcessor;
 import xyz.majexh.workflow.workflow.workflowEnum.State;
 import xyz.majexh.workflow.workflow.workflowEnum.Type;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -86,5 +92,35 @@ class WorkflowApplicationTests {
         service.changeState(task, State.FINISHED);
 
         System.out.println(task.getState());
+    }
+
+    @Test
+    void passwordEncoder() {
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        System.out.println(encoder.encode("test"));
+        System.out.println(encoder.matches("test", encoder.encode("test")));
+    }
+
+    @Test
+    void testClaims() throws InterruptedException {
+        SignatureAlgorithm algorithm = SignatureAlgorithm.HS512;
+        String secret = "test";
+        String jwt = Jwts.builder()
+                .claim("1", "1")
+                .claim("2", "2")
+                .claim("2", "3")
+                .setExpiration(new Date(Instant.now().toEpochMilli() + 1000))
+                .signWith(algorithm, secret)
+                .compact();
+        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(jwt).getBody();
+
+        Thread.sleep(2000);
+        System.out.println(claims.getExpiration().getTime());
+        System.out.println(Instant.now().toEpochMilli());
+        if (claims.getExpiration().getTime() < Instant.now().toEpochMilli()) {
+            throw new RuntimeException("超时");
+        }
+        System.out.println(claims);
     }
 }

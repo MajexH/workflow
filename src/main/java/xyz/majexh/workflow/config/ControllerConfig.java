@@ -2,6 +2,8 @@ package xyz.majexh.workflow.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import xyz.majexh.workflow.workflow.entity.def.Topology;
 import xyz.majexh.workflow.workflow.entity.running.Chain;
 import xyz.majexh.workflow.workflow.receiver.processor.Processor;
@@ -25,5 +27,10 @@ public class ControllerConfig {
     @Bean
     public ConcurrentHashMap<Type, Processor> getProcessorMap() {
         return new ConcurrentHashMap<>();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

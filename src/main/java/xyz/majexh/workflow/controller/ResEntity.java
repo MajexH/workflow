@@ -22,8 +22,8 @@ public class ResEntity<T> {
         return this;
     }
 
-    public ResEntity<T> error(HttpStatus status, String message) {
-        this.status = status.value();
+    public ResEntity<T> error(int status, String message) {
+        this.status = status;
         this.message = message;
         return this;
     }
