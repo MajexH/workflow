@@ -2,16 +2,14 @@ package xyz.majexh.workflow.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 import xyz.majexh.workflow.controller.ResEntity;
 import xyz.majexh.workflow.exceptions.ExceptionEnum;
@@ -21,6 +19,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 添加在usernameandpasswordFilter之前 用于填充securityContext
@@ -29,23 +29,33 @@ import java.io.IOException;
 public class JWTFilter extends GenericFilterBean {
 
     private TokenAuthenticationManager manager;
-    private RequestMatcher doNotCheckMatcher;
+    private List<RequestMatcher> doNotCheckMatcherChain;
+    private static final String HEADER = "Authorization";
 
-    public JWTFilter(String doNotMatchUrls, TokenAuthenticationManager manager) {
+    public JWTFilter(TokenAuthenticationManager manager, String... doNotMatchUrls) {
         this.manager = manager;
-        this.setDoNotCheckMatcher(new AntPathRequestMatcher(doNotMatchUrls));
+        List<RequestMatcher> chain = new LinkedList<>();
+        for (String url : doNotMatchUrls) {
+            chain.add(new AntPathRequestMatcher(url));
+        }
+        this.setDoNotCheckMatcher(chain);
     }
 
-    public void setDoNotCheckMatcher(RequestMatcher doNotCheckMatcher) {
-        this.doNotCheckMatcher = doNotCheckMatcher;
+    public void setDoNotCheckMatcher(List<RequestMatcher> doNotCheckMatcher) {
+        this.doNotCheckMatcherChain = doNotCheckMatcher;
     }
 
     private boolean doNotCheck(HttpServletRequest request) {
-        return this.doNotCheckMatcher.matches(request);
+        for (RequestMatcher matcher : this.doNotCheckMatcherChain) {
+            if (matcher.matches(request)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-        UserDetails user = manager.attemptAuthenticateToken(request.getHeader("Authorization"));
+        UserDetails user = manager.attemptAuthenticateToken(request.getHeader(HEADER));
         if (user == null) {
             throw new TokenException(ExceptionEnum.TOKEN_WRONG.getMessage());
         }
@@ -54,12 +64,26 @@ public class JWTFilter extends GenericFilterBean {
 
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         log.info(failed.getMessage());
+        // 清理工作
+        SecurityContextHolder.clearContext();
+
         response.setHeader("Content-Type", "application/json");
+        response.setHeader("Access-Control-Allow-Origin", "*");
         response.setCharacterEncoding("utf-8");
-        ResEntity res = new ResEntity();
-        res.error(401, failed.getMessage());
+
+        ResEntity.Entity<Object> entity = new ResEntity.Entity<>();
+
+        if (failed instanceof TokenException) {
+            TokenException temp = (TokenException) failed;
+            response.setStatus(temp.getStatus().value());
+            entity.setStatus(temp.getStatus());
+        } else {
+            entity.setStatus(HttpStatus.UNAUTHORIZED);
+        }
+        entity.setMessage(failed.getMessage());
         ObjectMapper mapper = new ObjectMapper();
-        response.getWriter().print(mapper.writeValueAsString(res));
+        response.getWriter().print(mapper.writeValueAsString(entity));
+        response.getWriter().flush();
     }
 
     @Override
@@ -70,6 +94,7 @@ public class JWTFilter extends GenericFilterBean {
             chain.doFilter(servletRequest, servletResponse);
             return;
         }
+
         Authentication token = null;
         try {
             token = attemptAuthentication(request, response);

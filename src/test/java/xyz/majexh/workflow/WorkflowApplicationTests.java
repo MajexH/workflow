@@ -18,7 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import xyz.majexh.workflow.annotations.ProcessorTypeAnnotation;
 import xyz.majexh.workflow.dao.UserDao;
+import xyz.majexh.workflow.domain.User;
 import xyz.majexh.workflow.service.AopService;
+import xyz.majexh.workflow.service.UserService;
 import xyz.majexh.workflow.utils.JwtUtils;
 import xyz.majexh.workflow.workflow.Controller;
 import xyz.majexh.workflow.workflow.entity.def.Node;
@@ -38,6 +40,9 @@ import java.util.concurrent.ConcurrentHashMap;
 class WorkflowApplicationTests {
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     AopService service;
 
     @Autowired
@@ -51,6 +56,9 @@ class WorkflowApplicationTests {
 
     @Autowired
     UserDao userDao;
+
+    @Autowired
+    JwtUtils jwtUtils;
 
     @Test
     void testUserDao() {
@@ -122,5 +130,23 @@ class WorkflowApplicationTests {
             throw new RuntimeException("超时");
         }
         System.out.println(claims);
+    }
+
+    @Test
+    void testVerify() {
+        User user = new User();
+        user.setName("test");
+//        String token = jwtUtils.generateTokenWithoutPayloads(user);
+//
+//        System.out.println(Jwts.parser().setSigningKey("test").parse(token));
+        Object test = Jwts.parser()
+                .setSigningKey("test")
+                .parse("eyJhbGciOiJIUzUxMiJ9.eyJuYW1lIjoidGVzdCJ9.PMlb4YQdZoivhe5VwhlvM_A2iaSrjv8MvP1614IKXz0uH3RD2ASiRoGzjehcFxMQD1VdYUNpSlLnrr27JOWAWw");
+        System.out.println(test);
+    }
+
+    @Test
+    void testUser() {
+        System.out.println(userService.loadUserByUsername("test"));
     }
 }

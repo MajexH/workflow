@@ -1,10 +1,12 @@
 package xyz.majexh.workflow.exceptions;
 
+import org.springframework.http.HttpStatus;
+
 public class BaseException extends RuntimeException {
 
-    private int status;
+    private HttpStatus status;
 
-    public BaseException(int status, String message) {
+    public BaseException(HttpStatus status, String message) {
         super(message);
         this.status = status;
     }
@@ -13,12 +15,11 @@ public class BaseException extends RuntimeException {
         this(exceptionEnum.getStatus(), exceptionEnum.getMessage());
     }
 
-    public int getStatus() {
+    public HttpStatus getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(HttpStatus status) {
         this.status = status;
     }
-
 }

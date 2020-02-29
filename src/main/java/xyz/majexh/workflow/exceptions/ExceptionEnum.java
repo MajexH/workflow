@@ -1,32 +1,35 @@
 package xyz.majexh.workflow.exceptions;
 
+import org.springframework.http.HttpStatus;
+
 public enum ExceptionEnum {
 
-    DUPLICATE_NODE_ID(400, "重复的节点ID"),
-    TOPOLOGY_ARGS_NOT_CAPABLE(400, "topology参数错误"),
-    START_TOPOLOGY_ERROR(400, "创建拓扑任务失败"),
-    INPUT_PARAMS_ERROR(400, "输入参数错误"),
-    TASK_NOT_FOUND(404, "找不到任务"),
-    OUTPUT_NOT_SATISFY(400, "任务输出参数错误"),
-    INSUFFICIENT_PARAMS(400, ""),
-    WRONG_LOGIN(400, "账户名或密码错误"),
-    TOKEN_EXPIRE(401, "登录token超时"),
-    TOKEN_WRONG(400, "验证token失败"),
-    INTERNAL_ERROR(500, "内部错误");
+    DUPLICATE_NODE_ID(HttpStatus.BAD_REQUEST, "重复的节点ID"),
+    TOPOLOGY_ARGS_NOT_CAPABLE(HttpStatus.BAD_REQUEST, "topology参数错误"),
+    START_TOPOLOGY_ERROR(HttpStatus.BAD_REQUEST, "创建拓扑任务失败"),
+    INPUT_PARAMS_ERROR(HttpStatus.BAD_REQUEST, "输入参数错误"),
+    TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "找不到任务"),
+    OUTPUT_NOT_SATISFY(HttpStatus.BAD_REQUEST, "任务输出参数错误"),
+    INSUFFICIENT_PARAMS(HttpStatus.BAD_REQUEST, ""),
+    WRONG_LOGIN(HttpStatus.BAD_REQUEST, "账户名或密码错误"),
+    USER_EXITS(HttpStatus.BAD_REQUEST, "注册失败，用户名已经被占用"),
+    TOKEN_EXPIRE(HttpStatus.UNAUTHORIZED, "登录token超时"),
+    TOKEN_WRONG(HttpStatus.BAD_REQUEST, "验证token失败"),
+    INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "内部错误");
 
-    private int status;
+    private HttpStatus status;
     private String message;
 
-    ExceptionEnum(int status, String Message) {
+    ExceptionEnum(HttpStatus status, String Message) {
         this.status = status;
         this.message = Message;
     }
 
-    public int getStatus() {
+    public HttpStatus getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(HttpStatus status) {
         this.status = status;
     }
 

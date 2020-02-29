@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,7 @@ import java.util.Map;
 
 @Component
 @Data
+@Slf4j
 public class JwtUtils {
 
     @Value("${jwt.expirationTime}")
@@ -39,6 +41,7 @@ public class JwtUtils {
     }
 
     public String generateToken(User userDetails, Map<String, Object> payloads) {
+        System.out.println(userDetails);
         payloads.put("userId", userDetails.getId());
         payloads.put("username", userDetails.getUsername());
         payloads.put("name", userDetails.getName());
@@ -64,11 +67,20 @@ public class JwtUtils {
      * @return
      */
     public UserDetails validateToken(String token) throws BaseException {
-        Claims claims = Jwts.parser()
-                            .setSigningKey(secret)
-                            // 去掉 Bearer
-                            .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-                            .getBody();
+        Claims claims = null;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(secret)
+                    // 去掉 Bearer
+                    .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                    .getBody();
+        } catch (Exception e) {
+            // parse失败
+            log.info(String.format("try to login with token {%s} failed", token));
+        }
+        if (claims == null) {
+            throw new BaseException(ExceptionEnum.TOKEN_WRONG);
+        }
         // 超时
         if (claims.getExpiration().getTime() < Instant.now().toEpochMilli()) {
             throw new BaseException(ExceptionEnum.TOKEN_EXPIRE);

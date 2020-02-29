@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import xyz.majexh.workflow.utils.StringUtils;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -14,7 +15,7 @@ import java.util.Collection;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String username;
     private String password;
@@ -48,5 +49,9 @@ public class User implements UserDetails {
     @JsonIgnore
     public boolean isEnabled() {
         return true;
+    }
+
+    public boolean isNone() {
+        return StringUtils.checkNone(this.username) || StringUtils.checkNone(this.password) || StringUtils.checkNone(this.name);
     }
 }

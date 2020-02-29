@@ -15,5 +15,5 @@ jwt:
   # token的过期时间为5天
   expirationTime: 432000000
   # jwt秘钥
-  secret: 'test'
+  secret: "test"
 

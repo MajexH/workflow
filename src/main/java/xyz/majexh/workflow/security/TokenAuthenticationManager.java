@@ -42,7 +42,7 @@ public class TokenAuthenticationManager {
 
     public UserDetails attemptAuthenticateToken(String token) {
         if (StringUtils.checkNone(token)) {
-            throw new TokenException(ExceptionEnum.TOKEN_WRONG.getMessage());
+            throw new TokenException(ExceptionEnum.TOKEN_WRONG.getMessage(), ExceptionEnum.TOKEN_WRONG.getStatus());
         }
         UserDetails res;
         try {
