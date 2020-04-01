@@ -19,6 +19,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class JWTFilter extends GenericFilterBean {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         UserDetails user = manager.attemptAuthenticateToken(request.getHeader(HEADER));
         if (user == null) {
-            throw new TokenException(ExceptionEnum.TOKEN_WRONG.getMessage());
+            throw new TokenException(ExceptionEnum.TOKEN_WRONG.getMessage(), ExceptionEnum.TOKEN_WRONG.getStatus());
         }
         return new UsernamePasswordAuthenticationToken(user.getUsername(), "", user.getAuthorities());
     }
@@ -71,18 +72,18 @@ public class JWTFilter extends GenericFilterBean {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setCharacterEncoding("utf-8");
 
-        ResEntity.Entity<Object> entity = new ResEntity.Entity<>();
-
+        HashMap<String, Object> res = new HashMap<>();
         if (failed instanceof TokenException) {
             TokenException temp = (TokenException) failed;
             response.setStatus(temp.getStatus().value());
-            entity.setStatus(temp.getStatus());
+            res.put("status", temp.getStatus().value());
         } else {
-            entity.setStatus(HttpStatus.UNAUTHORIZED);
+            res.put("status", HttpStatus.UNAUTHORIZED.value());
         }
-        entity.setMessage(failed.getMessage());
+        res.put("message", failed.getMessage());
+        res.put("data", null);
         ObjectMapper mapper = new ObjectMapper();
-        response.getWriter().print(mapper.writeValueAsString(entity));
+        response.getWriter().print(mapper.writeValueAsString(res));
         response.getWriter().flush();
     }
 
@@ -103,7 +104,7 @@ public class JWTFilter extends GenericFilterBean {
             return;
         }
         if (token == null) {
-            unsuccessfulAuthentication(request, response, new TokenException(ExceptionEnum.TOKEN_WRONG.getMessage()));
+            unsuccessfulAuthentication(request, response, new TokenException(ExceptionEnum.TOKEN_WRONG.getMessage(), ExceptionEnum.TOKEN_WRONG.getStatus()));
             return;
         }
         // 成功就设置Authentication

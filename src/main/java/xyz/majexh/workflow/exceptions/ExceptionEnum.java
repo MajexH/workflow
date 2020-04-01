@@ -14,7 +14,7 @@ public enum ExceptionEnum {
     WRONG_LOGIN(HttpStatus.BAD_REQUEST, "账户名或密码错误"),
     USER_EXITS(HttpStatus.BAD_REQUEST, "注册失败，用户名已经被占用"),
     TOKEN_EXPIRE(HttpStatus.UNAUTHORIZED, "登录token超时"),
-    TOKEN_WRONG(HttpStatus.BAD_REQUEST, "验证token失败"),
+    TOKEN_WRONG(HttpStatus.UNAUTHORIZED, "验证token失败"),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "内部错误");
 
     private HttpStatus status;

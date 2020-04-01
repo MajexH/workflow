@@ -48,7 +48,7 @@ public class TokenAuthenticationManager {
         try {
             res = this.jwtUtils.validateToken(token);
         } catch (BaseException exception) {
-            throw new TokenException(exception.getMessage());
+            throw new TokenException(exception.getMessage(), ExceptionEnum.TOKEN_WRONG.getStatus());
         }
         return res;
     }

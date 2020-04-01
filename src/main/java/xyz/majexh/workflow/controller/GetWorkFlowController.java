@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/workflow")
-public class WorkFlowController {
+public class GetWorkFlowController {
 
     private ControllerService controllerService;
 
@@ -55,6 +55,7 @@ public class WorkFlowController {
     @GetMapping("/topology")
     public ResponseEntity<HashMap<String, Object>> getTopology(String topologyName) throws Exception {
         Topology res = this.controllerService.getTopologyByName(topologyName);
+        System.out.println(res);
         if (res == null) {
             // 空 返回一个空的topology
             return ResEntity.okDefault(new Topology());

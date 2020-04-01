@@ -1,6 +1,5 @@
 package xyz.majexh.workflow.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

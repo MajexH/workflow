@@ -34,7 +34,10 @@ import xyz.majexh.workflow.workflow.workflowEnum.Type;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 @SpringBootTest
 class WorkflowApplicationTests {
@@ -148,5 +151,29 @@ class WorkflowApplicationTests {
     @Test
     void testUser() {
         System.out.println(userService.loadUserByUsername("test"));
+    }
+
+    @Test
+    void testQueue() throws InterruptedException {
+        BlockingDeque<Integer> test = new LinkedBlockingDeque<>();
+        Thread t1 = new Thread(() -> {
+            try {
+                System.out.println(test.takeFirst());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        Thread t2 = new Thread(() -> {
+            try {
+                Thread.sleep(2000);
+                test.putLast(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        t1.start();t2.start();
+
+        Thread.sleep(1000000);
     }
 }
