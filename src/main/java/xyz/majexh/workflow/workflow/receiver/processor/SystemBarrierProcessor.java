@@ -27,6 +27,7 @@ public class SystemBarrierProcessor implements Processor {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void process(Chain chain, Task task, MessageEntity entity) {
         log.info("check barrier");
         HashMap<String, Object> inputParams = JSONUtils.json2HashMap(task.getInputParams());
