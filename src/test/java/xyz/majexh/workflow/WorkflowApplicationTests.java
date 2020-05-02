@@ -16,6 +16,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import xyz.majexh.message.client.client.Client;
+import xyz.majexh.message.client.entity.MessageEntity;
 import xyz.majexh.workflow.annotations.ProcessorTypeAnnotation;
 import xyz.majexh.workflow.dao.UserDao;
 import xyz.majexh.workflow.domain.User;
@@ -24,7 +26,6 @@ import xyz.majexh.workflow.service.UserService;
 import xyz.majexh.workflow.utils.JwtUtils;
 import xyz.majexh.workflow.workflow.Controller;
 import xyz.majexh.workflow.workflow.entity.def.Node;
-import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
 import xyz.majexh.workflow.workflow.entity.running.Task;
 import xyz.majexh.workflow.workflow.receiver.processor.Processor;
 import xyz.majexh.workflow.workflow.receiver.processor.ProcessorMapConstructor;
@@ -41,6 +42,9 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 @SpringBootTest
 class WorkflowApplicationTests {
+
+    @Autowired
+    Client client;
 
     @Autowired
     UserService userService;
@@ -76,10 +80,10 @@ class WorkflowApplicationTests {
 
     @Test
     void testMap() {
-        HashMap<String, Integer> map1 = new HashMap<>() {{
+        HashMap<String, Integer> map1 = new HashMap() {{
             put("1", 1);
             put("2", 2);
-        }}, map2 = new HashMap<>() {{
+        }}, map2 = new HashMap() {{
             put("1", 2);
             put("2", 1);
             put("3", 3);
@@ -177,4 +181,8 @@ class WorkflowApplicationTests {
         Thread.sleep(1000000);
     }
 
+    @Test
+    void test() {
+        client.sendMessage();
+    }
 }

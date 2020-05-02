@@ -13,13 +13,13 @@ import java.util.Arrays;
  * 定义如下
  * {
  *     "taskId": "",
- *     // "success" || "fail" || "pick"
- *     "status": "",
+ *     // "success" || "fail" || "pick" command（pick response success result）
+ *     "status": "", code
  *     // failed message 作为错误消息
- *     "message": "",
+ *     "msg": "",
  *     // 返回给控制端的详细消息
  *     // success 其会传递给下一个task作为输入
- *     "res": {
+ *     "data": {
  *
  *     }
  * }
