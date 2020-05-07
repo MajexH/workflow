@@ -51,7 +51,7 @@ public class Topology {
         if (this.edgePair.containsKey(from)) {
             this.edgePair.get(from).add(to);
         } else {
-            this.edgePair.put(from, new ArrayList<>(){{
+            this.edgePair.put(from, new ArrayList<String>(){{
                 add(to);
             }});
         }

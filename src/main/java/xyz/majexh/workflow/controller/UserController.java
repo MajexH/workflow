@@ -42,7 +42,7 @@ public class UserController {
         this.authenticationManager.attemptAuthenticate(user);
         // 获取用户信息
         User info = this.userService.findUserByUsername(user.getUsername());
-        HashMap<String, Object> res = new HashMap<>(){{
+        HashMap<String, Object> res = new HashMap<String, Object>(){{
             this.put("token", jwtUtils.generateTokenWithoutPayloads(info));
         }};
         return ResEntity.okDefault(res);

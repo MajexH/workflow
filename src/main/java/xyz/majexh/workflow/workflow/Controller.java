@@ -8,6 +8,8 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
+import xyz.majexh.workflow.exceptions.BaseException;
+import xyz.majexh.workflow.exceptions.ExceptionEnum;
 import xyz.majexh.workflow.utils.StringUtils;
 import xyz.majexh.workflow.workflow.builder.TopologyBuilder;
 import xyz.majexh.workflow.workflow.entity.def.Topology;
@@ -17,9 +19,7 @@ import xyz.majexh.workflow.workflow.executors.ChainExecutor;
 import xyz.majexh.workflow.workflow.message.MessageController;
 import xyz.majexh.workflow.workflow.receiver.Receiver;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -71,7 +71,8 @@ public class Controller implements ApplicationRunner {
         this.builder = builder;
     }
 
-    private Chain createChain(String name) {
+    private Chain createChain(String name) throws Exception {
+        if (!this.topologies.containsKey(name)) throw new BaseException(ExceptionEnum.WRONG_TOPOLOGY_NAME);
         Chain chain = new Chain(this.topologies.get(name));
         this.chainMap.put(chain.getId(), chain);
         log.info(String.format("%s chain has been created", chain.getId()));
@@ -134,7 +135,7 @@ public class Controller implements ApplicationRunner {
         this.startRecv();
     }
 
-    public void startTopologyByName(String name, @Nullable JSON inputParams) {
+    public void startTopologyByName(String name, @Nullable JSON inputParams) throws Exception {
         Chain chain = this.createChain(name);
         if (inputParams == null) {
             inputParams = new JSONObject();

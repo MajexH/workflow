@@ -3,6 +3,7 @@ package xyz.majexh.workflow;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -23,9 +24,11 @@ import xyz.majexh.workflow.dao.UserDao;
 import xyz.majexh.workflow.domain.User;
 import xyz.majexh.workflow.service.AopService;
 import xyz.majexh.workflow.service.UserService;
+import xyz.majexh.workflow.utils.JSONUtils;
 import xyz.majexh.workflow.utils.JwtUtils;
 import xyz.majexh.workflow.workflow.Controller;
 import xyz.majexh.workflow.workflow.entity.def.Node;
+import xyz.majexh.workflow.workflow.entity.message.MessageBody;
 import xyz.majexh.workflow.workflow.entity.running.Task;
 import xyz.majexh.workflow.workflow.receiver.processor.Processor;
 import xyz.majexh.workflow.workflow.receiver.processor.ProcessorMapConstructor;
@@ -33,6 +36,7 @@ import xyz.majexh.workflow.workflow.receiver.processor.SystemBarrierProcessor;
 import xyz.majexh.workflow.workflow.workflowEnum.State;
 import xyz.majexh.workflow.workflow.workflowEnum.Type;
 
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.BlockingDeque;
@@ -182,7 +186,48 @@ class WorkflowApplicationTests {
     }
 
     @Test
-    void test() {
-        client.sendMessage();
+    void testJSON() {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("code", 200);
+        map.put("msg", null);
+        map.put("data", new HashMap<String, Object>(){{
+            put("taskId", "123123");
+            put("status", "FAIL");
+            put("params", new HashMap<String, Object>(){{
+                put("a", 1);
+                put("b", 2);
+            }});
+        }});
+        MessageBody body = JSON.parseObject(JSON.toJSONString(map), MessageBody.class);
+        HashMap<String, Object> data = JSONUtils.json2HashMap(body.getData());
+        Object params = data.get("params");
+        System.out.println(JSON.parseObject(params.toString(), new TypeReference<HashMap<String, Object>>(){}));
+        HashMap<String, Object> params1 = JSON.parseObject(params.toString(), new TypeReference<HashMap<String, Object>>(){});
+        System.out.println(params1);
+
+        JSON temp2 = JSON.parseObject(params.toString());
+        System.out.println(temp2);
+    }
+
+    @Test
+    void testConcurrentHashMap() {
+        ConcurrentHashMap<String, Object> test = new ConcurrentHashMap<>();
+        test.put("1", 2);
+        test.put("2", 3);
+        System.out.println(test.contains("1"));
+    }
+
+    @Test
+    void testReflect() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+        Class nodeClass = Node.class;
+        System.out.println(Arrays.toString(nodeClass.getDeclaredFields()));
+        Node node = new Node();
+
+
+
+        for (Field test : nodeClass.getDeclaredFields()) {
+            test.setAccessible(true);
+            System.out.println(test + " " + test.get(node));
+        }
     }
 }

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import xyz.majexh.workflow.annotations.ProcessorTypeAnnotation;
 import xyz.majexh.workflow.utils.JSONUtils;
-import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
+import xyz.majexh.workflow.workflow.entity.message.MessageBody;
 import xyz.majexh.workflow.workflow.entity.running.Chain;
 import xyz.majexh.workflow.workflow.entity.running.Task;
 import xyz.majexh.workflow.workflow.message.MessageController;
@@ -28,15 +28,15 @@ public class SystemBarrierProcessor implements Processor {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void process(Chain chain, Task task, MessageEntity entity) {
-        log.info("check barrier");
+    public void process(Chain chain, Task task, MessageBody entity) {
+        log.debug("check barrier");
         HashMap<String, Object> inputParams = JSONUtils.json2HashMap(task.getInputParams());
         if (!inputParams.containsKey(task.getId())) {
-            log.error(String.format("task %s is barrier but lack the input params for pass", task.getId()));
+            log.error("task {} is barrier but lack the input params for pass, task detail: {}", task.getId(), task);
             // TODO: exception
             return;
         }
-        // TODO: 可能优化的点 这个地方现在想到的只有强转了 没有其他想法
+        // 可能优化的点 这个地方现在想到的只有强转了 没有其他想法
         List<String> preTasks = (List<String>) inputParams.get(task.getId());
         for (String preTaskId : preTasks) {
             // 如果其中有任何一个任务没有结束 则barrier不能通过
@@ -45,12 +45,15 @@ public class SystemBarrierProcessor implements Processor {
                 return;
             }
         }
-        this.messageController.putState(new MessageEntity(){{
-            setStatus("success");
-            setTaskId(task.getId());
-            setRes(new JSONObject());
-            setMessage("");
+        this.messageController.putState(new MessageBody(){{
+            setCode(200);
+            setMsg("success");
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("taskId", task.getId());
+            data.put("status", "SUCC");
+            data.put("params", new JSONObject());
+            setData(new JSONObject(data));
         }});
-        log.info("barrier pass");
+        log.debug("barrier pass");
     }
 }

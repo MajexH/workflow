@@ -15,6 +15,9 @@ public enum ExceptionEnum {
     USER_EXITS(HttpStatus.BAD_REQUEST, "注册失败，用户名已经被占用"),
     TOKEN_EXPIRE(HttpStatus.UNAUTHORIZED, "登录token超时"),
     TOKEN_WRONG(HttpStatus.UNAUTHORIZED, "验证token失败"),
+    TOPOLOGY_NOT_FOUND(HttpStatus.NOT_FOUND, "未找到对应拓扑"),
+    WRONG_PARAMS(HttpStatus.BAD_REQUEST, "请求参数错误，请检查"),
+    WRONG_TOPOLOGY_NAME(HttpStatus.BAD_REQUEST, "创建chain失败，请检查参数"),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "内部错误");
 
     private HttpStatus status;

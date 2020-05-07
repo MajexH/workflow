@@ -36,7 +36,7 @@ public class Chain {
         this.topology = topology;
         this.state = State.CREATED;
         this.taskMap = new ConcurrentHashMap<>();
-        this.tracing = new ConcurrentHashMap<>(){{
+        this.tracing = new ConcurrentHashMap<String, Long>(){{
             put(state.getStateName(), new Date().getTime());
         }};
         this.params = new ConcurrentHashMap<>();

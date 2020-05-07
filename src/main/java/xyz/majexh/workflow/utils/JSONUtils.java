@@ -43,7 +43,7 @@ public class JSONUtils {
     }
 
     public static HashMap<String, Object> json2HashMap(JSON params) {
-        return JSON.parseObject(params.toString(), new TypeReference<>(){});
+        return JSON.parseObject(params.toString(), new TypeReference<HashMap<String, Object>>(){});
     }
 
     public static JSON hashMap2Json(Map<String, Object> hashMap) {

@@ -9,13 +9,6 @@ import java.util.HashMap;
 
 public class ResEntity {
 
-    @Data
-    public static class Entity<T> {
-        private HttpStatus status;
-        private String message;
-        private T data;
-    }
-
     private static<T> HashMap<String, Object> createPayload(int status, String message, T data) {
         HashMap<String, Object> resMap = new HashMap<>();
         resMap.put("status", status);

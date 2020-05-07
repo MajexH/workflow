@@ -1,18 +1,21 @@
 package xyz.majexh.workflow.utils;
 
-import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
+import xyz.majexh.message.client.enums.CommandEnum;
+import xyz.majexh.workflow.workflow.entity.message.MessageBody;
+
+import java.util.HashMap;
 
 public class MessageUtils {
 
-    public static boolean isSuccess(MessageEntity entity) {
-        return entity.getStatus().equals("success");
+    public static boolean isSuccess(HashMap<String, Object> message) {
+        return message.get("status").equals("SUCC");
     }
 
-    public static boolean isFail(MessageEntity entity) {
-        return entity.getStatus().equals("fail");
+    public static boolean isFail(HashMap<String, Object> message) {
+        return message.get("status").equals("FAIL");
     }
 
-    public static boolean isPick(MessageEntity entity) {
-        return entity.getStatus().equals("pick");
+    public static boolean isPick(HashMap<String, Object> message) {
+        return message.get("status").equals("PICK");
     }
 }

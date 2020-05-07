@@ -33,9 +33,8 @@ public class Task {
         this.node = node;
         this.id = StringUtils.getTaskId(chainId, node.getId());
         this.inputParams = inputParams;
-        this.tracing = new HashMap<>(){{
-            put(state.getStateName(), new Date().getTime());
-        }};
+        this.tracing = new HashMap<>();
+        this.tracing.put(state.getStateName(), new Date().getTime());
     }
 
     public void changeState(State state) {

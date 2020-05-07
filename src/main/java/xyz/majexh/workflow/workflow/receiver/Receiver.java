@@ -1,20 +1,26 @@
 package xyz.majexh.workflow.workflow.receiver;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.service.AopService;
+import xyz.majexh.workflow.utils.JSONUtils;
 import xyz.majexh.workflow.utils.MessageUtils;
 import xyz.majexh.workflow.utils.StringUtils;
-import xyz.majexh.workflow.workflow.entity.message.MessageEntity;
+import xyz.majexh.workflow.workflow.entity.message.MessageBody;
 import xyz.majexh.workflow.workflow.entity.running.Chain;
 import xyz.majexh.workflow.workflow.entity.running.Task;
 import xyz.majexh.workflow.workflow.executors.ChainExecutor;
 import xyz.majexh.workflow.workflow.message.MessageController;
 import xyz.majexh.workflow.workflow.receiver.processor.Processor;
+import xyz.majexh.workflow.workflow.receiver.processor.UserProcessor;
 import xyz.majexh.workflow.workflow.workflowEnum.State;
 import xyz.majexh.workflow.workflow.workflowEnum.Type;
 
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -32,6 +38,13 @@ public class Receiver {
     private ConcurrentHashMap<Type, Processor> processorMap;
     private ChainExecutor executor;
     private AopService aopService;
+    // 默认的处理器
+    private UserProcessor defaultProcessor;
+
+    @Autowired
+    public void setUserProcessor(UserProcessor defaultProcessor) {
+        this.defaultProcessor = defaultProcessor;
+    }
 
     @Autowired
     public void setAopService(AopService aopService) {
@@ -72,7 +85,7 @@ public class Receiver {
         this.messageController.putTask(task);
     }
 
-    private MessageEntity getRes() {
+    private MessageBody getRes() {
         return this.messageController.getRes();
     }
 
@@ -81,11 +94,20 @@ public class Receiver {
      * @param task
      * @param entity
      */
-    private void process(Chain chain, Task task, MessageEntity entity) {
+    private void process(Chain chain, Task task, MessageBody entity) {
         // 根据res更新输出
-        task.setOutputParams(entity.getRes());
+        HashMap<String, Object> message = JSONUtils.json2HashMap(entity.getData());
+        if (!message.containsKey("params")) {
+            log.error("got wrong message without data part in params");
+            this.aopService.changeState(task, State.FAIL);
+            this.aopService.changeState(chain, State.FAIL);
+            chain.setMessage("从worker处获取到不包含params字段的消息，请检查参数");
+            return;
+        }
+        JSON outputs = JSON.parseObject(message.get("params").toString());
+        task.setOutputParams(outputs);
         // 保存当前的输出
-        chain.saveParams(entity.getRes());
+        chain.saveParams(outputs);
         // task.changeState(State.FINISHED);
         this.aopService.changeState(task, State.FINISHED);
         log.info(String.format("%s task success finish", task.getId()));
@@ -93,7 +115,9 @@ public class Receiver {
             log.debug(String.format("new task %s generate", nextTask.getId()));
             Processor processor = this.processorMap.get(nextTask.getNodeType());
             if (processor == null) {
-                // TODO: default process & throw Exception
+                // default process
+                defaultProcessor.process(chain, nextTask, entity);
+                log.debug("task require {} processor not found, use default processor", task.getNodeType());
             } else {
                processor.process(chain, nextTask, entity);
             }
@@ -104,18 +128,27 @@ public class Receiver {
      * 处理接受消息的逻辑
      */
     public void receiveMessage() {
-        MessageEntity message = this.getRes();
-        if (message.getTaskId() == null) {
+        MessageBody res = this.getRes();
+        log.debug("got message body: {}", res);
+        HashMap<String, Object> message = JSONUtils.json2HashMap(res.getData());
+
+        if (!message.containsKey("taskId")) {
             log.error("error: receive response without taskId filed");
             return;
         }
-        Task task = getTaskFromChainMap(message.getTaskId());
-        Chain chain = getChainFromChainMap(message.getTaskId());
-        log.debug(String.format("receive %s task's response, status is %s", message.getTaskId(), message.getStatus()));
+        String taskId = (String) message.get("taskId");
+        Task task = getTaskFromChainMap(taskId);
+        Chain chain = getChainFromChainMap(taskId);
+        log.debug(String.format("receive %s task's response, status is %s", taskId, message.get("status")));
+
+        if (!message.containsKey("status")) {
+            log.error("error: receive response without status filed");
+            return;
+        }
         if (MessageUtils.isPick(message)) {
             // 其他的通信的时候 应该要向我传递一个pick的消息 告诉我消息任务已经被正确的拿到
             if (task == null) {
-                log.error(String.format("cannot find %s task in chain_map, please check the taskId", message.getTaskId()));
+                log.error(String.format("cannot find %s task in chain_map, please check the taskId", taskId));
                 // TODO: Exception
                 return;
             }
@@ -123,8 +156,8 @@ public class Receiver {
             // task.changeState(State.RUNNING);
             this.aopService.changeState(task, State.RUNNING);
         } else if (MessageUtils.isSuccess(message)) {
-            log.info(String.format("receive \"success\" status of task %s", message.getTaskId()));
-            this.process(chain, task, message);
+            log.info(String.format("receive \"success\" status of task %s",taskId));
+            this.process(chain, task, res);
         } else if (MessageUtils.isFail(message)) {
             if (task.getRetry() < task.getRetryMax()) {
                 task.setRetry(task.getRetry() + 1);
@@ -136,8 +169,8 @@ public class Receiver {
                 this.aopService.changeState(task, State.FAIL);
                 // 传递失败消息 chain.changeState(State.FAIL);
                 this.aopService.changeState(chain, State.FAIL);
-                chain.setMessage(message.getMessage());
-                log.debug(String.format("chain %s fail because of %s task fail, fail message: %s", chain.getId(), task.getId(), message.getMessage()));
+                chain.setMessage(res.getMsg());
+                log.debug(String.format("chain %s fail because of %s task fail, fail message: %s", chain.getId(), task.getId(), res.getMsg()));
             }
         }
     }

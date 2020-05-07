@@ -12,6 +12,6 @@ public class AopServiceAdvice {
     @After("execution(* xyz.majexh.workflow.service.AopService.changeState(..))")
     public void after(JoinPoint joinPoint) {
         // 可以从joinPoint里面拿去函数的数据
-        System.out.println("after");
+        System.out.println("aop service after -- test");
     }
 }
