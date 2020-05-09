@@ -1,56 +1,34 @@
 package xyz.majexh.workflow.workflow.builder;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
-import xyz.majexh.workflow.utils.JSONUtils;
 import xyz.majexh.workflow.exceptions.BaseException;
 import xyz.majexh.workflow.exceptions.ExceptionEnum;
 import xyz.majexh.workflow.workflow.entity.def.Node;
 import xyz.majexh.workflow.workflow.entity.def.Topology;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * 从/resources/topology下读取所有的以json格式文件 每个json格式文件会被format成为一个JSONObject
- */
+@Component("jsonTopologyBuilder")
 @Slf4j
-@Component
-@Primary
-public class FileTopologyBuilder implements TopologyBuilder {
+public class JsonTopologyBuilder implements TopologyBuilder {
 
     @Autowired
     private NodeBuilder nodeBuilder;
 
     @Override
     public HashMap<String, Topology> loadTopologies() {
-        HashMap<String, Topology> topologies = new HashMap<>();
-        try {
-            File topology = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "topology");
-            File[] files =  topology.listFiles((file, name) -> name.endsWith("json"));
-            if (files == null) return topologies;
-            for (File file : files) {
-                log.debug(String.format("load topology from %s", file.getName()));
-                JSONObject json = JSONUtils.jsonReader(new BufferedInputStream(new FileInputStream(file)));
-                List<Node> nodes = nodeBuilder.buildNodes(json.getJSONArray("nodes"));
-                Topology temp = getTopologyFromJson(json, nodes);
-                topologies.put(temp.getName(), temp);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            log.error("读取topology预定义文件失败");
-        }
-        log.info("load all json file finished");
-        return topologies;
+        return null;
+    }
+
+    public Topology loadTopology(JSONObject json) {
+        List<Node> nodes = nodeBuilder.buildNodes(json.getJSONArray("nodes"));
+        return getTopologyFromJson(json, nodes);
     }
 
     public Topology getTopologyFromJson(JSONObject json, List<Node> nodes) throws BaseException {

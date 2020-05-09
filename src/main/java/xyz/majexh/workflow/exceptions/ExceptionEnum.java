@@ -18,6 +18,8 @@ public enum ExceptionEnum {
     TOPOLOGY_NOT_FOUND(HttpStatus.NOT_FOUND, "未找到对应拓扑"),
     WRONG_PARAMS(HttpStatus.BAD_REQUEST, "请求参数错误，请检查"),
     WRONG_TOPOLOGY_NAME(HttpStatus.BAD_REQUEST, "创建chain失败，请检查参数"),
+    CHAIN_NOT_FOUND(HttpStatus.NOT_FOUND, "未找到对应运行链"),
+    WRONG_RESUBMIT_TASK_STATE(HttpStatus.BAD_REQUEST, "无法重启正在运行的任务"),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "内部错误");
 
     private HttpStatus status;

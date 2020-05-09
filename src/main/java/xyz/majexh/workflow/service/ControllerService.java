@@ -38,11 +38,6 @@ public class ControllerService implements ControllerServiceInterface {
     }
 
     @Override
-    public void submitTask(String taskId) throws Exception {
-        this.controller.submitTask(taskId);
-    }
-
-    @Override
     public void restartTask(String taskId) throws Exception {
         this.controller.restartTask(taskId);
     }
@@ -56,7 +51,7 @@ public class ControllerService implements ControllerServiceInterface {
     public List<ChainRes> getAllChain() throws Exception {
         List<ChainRes> res = new ArrayList<>();
         for (Chain chain : this.controller.getAllChain()) {
-            res.add(new ChainRes(chain.getTopology().getName(), chain.getId()));
+            res.add(new ChainRes(chain.getTopology().getName(), chain.getId(), chain.getState()));
         }
         return res;
     }
@@ -100,8 +95,8 @@ public class ControllerService implements ControllerServiceInterface {
     }
 
     @Override
-    public void startTopologyByName(String topologyName, JSON inputParams) throws Exception {
-        this.controller.startTopologyByName(topologyName, inputParams);
+    public String startTopologyByName(String topologyName, JSON inputParams) throws Exception {
+        return this.controller.startTopologyByName(topologyName, inputParams);
     }
 
 

@@ -2,6 +2,7 @@ package xyz.majexh.workflow.workflow.entity.running;
 
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import xyz.majexh.workflow.utils.StringUtils;
 import xyz.majexh.workflow.workflow.entity.def.Node;
 import xyz.majexh.workflow.workflow.workflowEnum.State;
@@ -15,6 +16,7 @@ import java.util.List;
  * Node被启动后形成Task
  */
 @Data
+@NoArgsConstructor
 public class Task {
 
     private String id;

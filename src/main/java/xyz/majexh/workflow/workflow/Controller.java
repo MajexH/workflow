@@ -18,6 +18,7 @@ import xyz.majexh.workflow.workflow.entity.running.Task;
 import xyz.majexh.workflow.workflow.executors.ChainExecutor;
 import xyz.majexh.workflow.workflow.message.MessageController;
 import xyz.majexh.workflow.workflow.receiver.Receiver;
+import xyz.majexh.workflow.workflow.workflowEnum.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,7 +136,7 @@ public class Controller implements ApplicationRunner {
         this.startRecv();
     }
 
-    public void startTopologyByName(String name, @Nullable JSON inputParams) throws Exception {
+    public String startTopologyByName(String name, @Nullable JSON inputParams) throws Exception {
         Chain chain = this.createChain(name);
         if (inputParams == null) {
             inputParams = new JSONObject();
@@ -143,6 +144,7 @@ public class Controller implements ApplicationRunner {
         Task task = this.executor.getFirstTask(chain, inputParams);
         // 启动任务
         this.submitTask(task.getId());
+        return chain.getId();
     }
 
     // TODO: 针对第一个任务的类型 也要调用相应的节点判断逻辑 和 节点的运行逻辑
@@ -151,11 +153,19 @@ public class Controller implements ApplicationRunner {
         this.messageControllerImpl.putTask(chain.getTask(taskId));
     }
 
-    public void restartTask(String taskId) {
+    public void restartTask(String taskId) throws BaseException {
         Chain chain = this.getChain(StringUtils.extractChainIdFromTaskId(taskId));
+        if (chain == null) {
+            log.error("chain {} not found", StringUtils.extractChainIdFromTaskId(taskId));
+            throw new BaseException(ExceptionEnum.CHAIN_NOT_FOUND);
+        }
         Task task = chain.getTask(taskId);
         if (task == null) {
             log.error(String.format("the task %s submitted to restart is not found", taskId));
+            throw new BaseException(ExceptionEnum.TASK_NOT_FOUND);
+        }
+        if (!task.getState().equals(State.FAIL) || !task.getState().equals(State.FINISHED)) {
+            throw new BaseException(ExceptionEnum.WRONG_RESUBMIT_TASK_STATE);
         }
         this.submitTask(taskId);
     }

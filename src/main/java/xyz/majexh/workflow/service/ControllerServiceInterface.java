@@ -15,8 +15,6 @@ import java.util.List;
 
 public interface ControllerServiceInterface {
 
-    void submitTask(String taskId) throws Exception;
-
     void restartTask(String taskId) throws Exception;
 
     Chain getChain(String chainId) throws Exception;
@@ -33,5 +31,5 @@ public interface ControllerServiceInterface {
 
     void updateNodeOfTopologyByTopologyName(String topologyName, Node node) throws Exception;
 
-    void startTopologyByName(String topologyName, @Nullable JSON inputParams) throws Exception;
+    String startTopologyByName(String topologyName, @Nullable JSON inputParams) throws Exception;
 }
