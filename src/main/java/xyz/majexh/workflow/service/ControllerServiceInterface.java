@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import org.springframework.lang.Nullable;
 import xyz.majexh.workflow.controller.ResEntity;
 import xyz.majexh.workflow.domain.ChainRes;
+import xyz.majexh.workflow.domain.TaskBo;
 import xyz.majexh.workflow.domain.TaskRes;
 import xyz.majexh.workflow.domain.TopologyRes;
 import xyz.majexh.workflow.workflow.entity.def.Node;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public interface ControllerServiceInterface {
 
-    void restartTask(String taskId) throws Exception;
+    void restartTask(TaskBo taskBo) throws Exception;
 
     Chain getChain(String chainId) throws Exception;
 

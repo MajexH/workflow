@@ -1,11 +1,13 @@
 package xyz.majexh.workflow.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import xyz.majexh.workflow.controller.ResEntity;
 import xyz.majexh.workflow.domain.ChainRes;
+import xyz.majexh.workflow.domain.TaskBo;
 import xyz.majexh.workflow.domain.TaskRes;
 import xyz.majexh.workflow.domain.TopologyRes;
 import xyz.majexh.workflow.exceptions.BaseException;
@@ -16,6 +18,7 @@ import xyz.majexh.workflow.workflow.entity.def.Node;
 import xyz.majexh.workflow.workflow.entity.def.Topology;
 import xyz.majexh.workflow.workflow.entity.running.Chain;
 import xyz.majexh.workflow.workflow.entity.running.Task;
+import xyz.majexh.workflow.workflow.workflowEnum.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,12 @@ public class ControllerService implements ControllerServiceInterface {
 
     private Controller controller;
     private ConcurrentHashMap<String, Topology> topologies;
+    private ConcurrentHashMap<String, Chain> chainMap;
+
+    @Autowired
+    public void setChainMap(ConcurrentHashMap<String, Chain> chainMap) {
+        this.chainMap = chainMap;
+    }
 
     @Autowired
     public void setController(Controller controller) {
@@ -38,8 +47,21 @@ public class ControllerService implements ControllerServiceInterface {
     }
 
     @Override
-    public void restartTask(String taskId) throws Exception {
-        this.controller.restartTask(taskId);
+    public void restartTask(TaskBo taskBo) throws Exception {
+        if (!this.chainMap.containsKey(StringUtils.extractChainIdFromTaskId(taskBo.getId()))) {
+            throw new BaseException(ExceptionEnum.CHAIN_NOT_FOUND);
+        }
+        Chain chain = this.chainMap.get(StringUtils.extractChainIdFromTaskId(taskBo.getId()));
+        Task task = chain.getTask(taskBo.getId());
+        if (task == null) {
+            throw new BaseException(ExceptionEnum.TASK_NOT_FOUND);
+        }
+        if (!task.getState().equals(State.FAIL) || !task.getState().equals(State.FINISHED)) {
+            throw new BaseException(ExceptionEnum.WRONG_RESUBMIT_TASK_STATE);
+        }
+        task.setInputParams(new JSONObject(taskBo.getInputParams()));
+        task.setRetry(0);
+        this.controller.restartTask(taskBo.getId());
     }
 
     @Override

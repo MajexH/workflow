@@ -21,12 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TaskController {
 
     private ControllerService controllerService;
-    private ConcurrentHashMap<String, Chain> chainMap;
-
-    @Autowired
-    public void setChainMap(ConcurrentHashMap<String, Chain> chainMap) {
-        this.chainMap = chainMap;
-    }
 
     @Autowired
     public void setControllerService(ControllerService controllerService) {
@@ -45,20 +39,7 @@ public class TaskController {
 
     @PostMapping("/restartTask")
     public ResponseEntity<HashMap<String, Object>> restartTask(@RequestBody TaskBo taskBo) throws Exception {
-        if (!this.chainMap.containsKey(StringUtils.extractChainIdFromTaskId(taskBo.getId()))) {
-            throw new BaseException(ExceptionEnum.CHAIN_NOT_FOUND);
-        }
-        Chain chain = this.chainMap.get(StringUtils.extractChainIdFromTaskId(taskBo.getId()));
-        Task task = chain.getTask(taskBo.getId());
-        if (task == null) {
-            throw new BaseException(ExceptionEnum.TASK_NOT_FOUND);
-        }
-        if (!task.getState().equals(State.FAIL) || !task.getState().equals(State.FINISHED)) {
-            throw new BaseException(ExceptionEnum.WRONG_RESUBMIT_TASK_STATE);
-        }
-        task.setInputParams(new JSONObject(taskBo.getInputParams()));
-        task.setRetry(0);
-        this.controllerService.restartTask(task.getId());
+        this.controllerService.restartTask(taskBo);
         return ResEntity.okDefault(null);
     }
 }
