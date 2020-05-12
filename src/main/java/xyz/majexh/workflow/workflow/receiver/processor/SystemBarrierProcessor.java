@@ -1,8 +1,11 @@
 package xyz.majexh.workflow.workflow.receiver.processor;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import xyz.majexh.message.client.entity.MessageEntity;
+import xyz.majexh.message.client.enums.CommandEnum;
 import xyz.majexh.workflow.annotations.ProcessorTypeAnnotation;
 import xyz.majexh.workflow.utils.JSONUtils;
 import xyz.majexh.workflow.workflow.entity.message.MessageBody;
@@ -26,6 +29,7 @@ public class SystemBarrierProcessor implements Processor {
         this.messageController = messageController;
     }
 
+
     @Override
     @SuppressWarnings("unchecked")
     public void process(Chain chain, Task task, MessageBody entity) {
@@ -45,15 +49,18 @@ public class SystemBarrierProcessor implements Processor {
                 return;
             }
         }
-        this.messageController.putState(new MessageBody(){{
+        MessageBody body = new MessageBody(){{
             setCode(200);
-            setMsg("success");
+            setMsg("");
             HashMap<String, Object> data = new HashMap<>();
             data.put("taskId", task.getId());
-            data.put("status", "SUCC");
             data.put("params", new JSONObject());
             setData(new JSONObject(data));
-        }});
+        }};
+        MessageEntity res = new MessageEntity();
+        res.setCommand(CommandEnum.RESULT);
+        res.setBody(JSON.toJSONString(body));
+        this.messageController.putState(res);
         log.debug("barrier pass");
     }
 }

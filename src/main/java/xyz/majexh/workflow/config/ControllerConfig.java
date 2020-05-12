@@ -18,16 +18,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ControllerConfig {
 
     @Bean
-    public LinkedBlockingQueue<MessageBody> getResQueue() {
-        return new LinkedBlockingQueue<>();
-    }
-
-    @Bean
-    public LinkedBlockingQueue<Task> getTaskQueue() {
-        return new LinkedBlockingQueue<>();
-    }
-
-    @Bean
     public ConcurrentHashMap<String, Chain> getChainMap() {
         return new ConcurrentHashMap<>();
     }

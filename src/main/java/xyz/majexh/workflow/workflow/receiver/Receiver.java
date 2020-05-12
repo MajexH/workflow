@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import xyz.majexh.message.client.entity.MessageEntity;
 import xyz.majexh.workflow.service.AopService;
 import xyz.majexh.workflow.utils.JSONUtils;
 import xyz.majexh.workflow.utils.MessageUtils;
@@ -85,7 +87,7 @@ public class Receiver {
         this.messageController.putTask(task);
     }
 
-    private MessageBody getRes() {
+    private MessageEntity getRes() {
         return this.messageController.getRes();
     }
 
@@ -128,10 +130,12 @@ public class Receiver {
      * 处理接受消息的逻辑
      */
     public void receiveMessage() {
-        MessageBody res = this.getRes();
-        log.debug("got message body: {}", res);
-        HashMap<String, Object> message = JSONUtils.json2HashMap(res.getData());
+        MessageEntity entity = this.getRes();
 
+        MessageBody res = JSON.parseObject(entity.getBody(), MessageBody.class);
+        log.debug("got message body: {}", res);
+        // 参数检查
+        HashMap<String, Object> message = JSONUtils.json2HashMap(res.getData());
         if (!message.containsKey("taskId")) {
             log.error("error: receive response without taskId filed");
             return;
@@ -139,13 +143,10 @@ public class Receiver {
         String taskId = (String) message.get("taskId");
         Task task = getTaskFromChainMap(taskId);
         Chain chain = getChainFromChainMap(taskId);
-        log.debug(String.format("receive %s task's response, status is %s", taskId, message.get("status")));
+        log.debug(String.format("receive %s task's response, status is %s", taskId, entity.getCommand()));
 
-        if (!message.containsKey("status")) {
-            log.error("error: receive response without status filed");
-            return;
-        }
-        if (MessageUtils.isPick(message)) {
+        // 根据 entity 中的 Command来判断
+        if (MessageUtils.isPick(entity)) {
             // 其他的通信的时候 应该要向我传递一个pick的消息 告诉我消息任务已经被正确的拿到
             if (task == null) {
                 log.error(String.format("cannot find %s task in chain_map, please check the taskId", taskId));
@@ -155,10 +156,10 @@ public class Receiver {
             // 如果worker已经拿到了message,则说明任务已经开始运行
             // task.changeState(State.RUNNING);
             this.aopService.changeState(task, State.RUNNING);
-        } else if (MessageUtils.isSuccess(message)) {
+        } else if (MessageUtils.isSuccess(res)) {
             log.info(String.format("receive \"success\" status of task %s",taskId));
             this.process(chain, task, res);
-        } else if (MessageUtils.isFail(message)) {
+        } else if (MessageUtils.isFail(res)) {
             if (task.getRetry() < task.getRetryMax()) {
                 task.setRetry(task.getRetry() + 1);
                 // 重新上交任务

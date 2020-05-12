@@ -6,3 +6,6 @@ spring:
     password: a564335
   jpa:
     show-sql: true
+logging:
+  level:
+    xyz.majexh.message: DEBUG
