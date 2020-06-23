@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.DispatcherServlet;
 import xyz.majexh.message.client.client.Client;
 import xyz.majexh.message.client.entity.MessageEntity;
 import xyz.majexh.workflow.annotations.ProcessorTypeAnnotation;
@@ -36,13 +37,21 @@ import xyz.majexh.workflow.workflow.receiver.processor.SystemBarrierProcessor;
 import xyz.majexh.workflow.workflow.workflowEnum.State;
 import xyz.majexh.workflow.workflow.workflowEnum.Type;
 
+import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.function.BinaryOperator;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SpringBootTest
 class WorkflowApplicationTests {
@@ -229,5 +238,21 @@ class WorkflowApplicationTests {
             test.setAccessible(true);
             System.out.println(test + " " + test.get(node));
         }
+    }
+
+    @Test
+    void testStream() throws FileNotFoundException {
+        Set<String> sets = new HashSet<>();
+
+        for (int i = 0; i <= 100; i++) {
+            sets.add(UUID.randomUUID().toString());
+        }
+
+        Map<String, String> res = sets.stream()
+                .filter((input) -> input.contains("e1"))
+                .collect(Collectors.toMap((input) -> input.substring(0, 2), (input) -> input))
+                ;
+        InputStream s = new BufferedInputStream(new FileInputStream(new File("")));
+        System.out.println(res);
     }
 }

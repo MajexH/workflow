@@ -40,7 +40,9 @@ public class Task {
     }
 
     public void changeState(State state) {
-        if (this.state.isSameSate(state)) return;
+        if (this.state.isSameSate(state)) {
+            return;
+        }
         this.tracing.put(String.format("%s -> %s", this.state.getStateName(), state.getStateName()), new Date().getTime());
         this.state = state;
     }

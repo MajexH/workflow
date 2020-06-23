@@ -164,7 +164,7 @@ public class Controller implements ApplicationRunner {
             log.error(String.format("the task %s submitted to restart is not found", taskId));
             throw new BaseException(ExceptionEnum.TASK_NOT_FOUND);
         }
-        if (!task.getState().equals(State.FAIL) || !task.getState().equals(State.FINISHED)) {
+        if (!task.getState().equals(State.FAIL) && !task.getState().equals(State.FINISHED)) {
             throw new BaseException(ExceptionEnum.WRONG_RESUBMIT_TASK_STATE);
         }
         this.submitTask(taskId);

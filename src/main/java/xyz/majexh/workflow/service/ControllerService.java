@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author majexh
+ */
 @Service
 public class ControllerService implements ControllerServiceInterface {
 
@@ -56,7 +59,8 @@ public class ControllerService implements ControllerServiceInterface {
         if (task == null) {
             throw new BaseException(ExceptionEnum.TASK_NOT_FOUND);
         }
-        if (!task.getState().equals(State.FAIL) || !task.getState().equals(State.FINISHED)) {
+
+        if (!task.getState().equals(State.FAIL) && !task.getState().equals(State.FINISHED)) {
             throw new BaseException(ExceptionEnum.WRONG_RESUBMIT_TASK_STATE);
         }
         task.setInputParams(new JSONObject(taskBo.getInputParams()));

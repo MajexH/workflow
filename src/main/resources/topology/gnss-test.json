@@ -1,0 +1,60 @@
+{
+  "name": "gnss-test",
+  "nodes": [
+    {
+      "id": 0,
+      "name": "test1",
+      "handle": "ftp-downloader",
+      "input_params": [
+        "expt",
+        "year",
+        "startDay",
+        "endDay",
+        "type",
+        "ofiles",
+        "nfiles",
+        "host",
+        "port",
+        "username",
+        "password",
+        "remotePath",
+        "localPath",
+        "dirPattern",
+        "filePattern",
+        "downloaderType"
+      ],
+      "output_params": [
+        "sp3files",
+        "clkfiles"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "barrier",
+      "type": "system"
+    },
+    {
+      "id": 2,
+      "name": "test2",
+      "handle": "gnss-rpc",
+      "input_params": [
+        "expt",
+        "ofiles",
+        "nfiles",
+        "sp3files",
+        "clkfiles",
+        "year",
+        "startDay",
+        "endDay",
+        "type"
+      ],
+      "output_params": []
+    }
+  ],
+  "start_node_id": 0,
+  "end_node_id": 2,
+  "edges": [
+    [0, 1],
+    [1, 2]
+  ]
+}

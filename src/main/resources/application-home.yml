@@ -6,6 +6,14 @@ spring:
     password: a564335
   jpa:
     show-sql: true
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/rtkData
+      host: localhost
+      port: 27017
+      database: rtkData
 logging:
   level:
     xyz.majexh.message: DEBUG
+
+

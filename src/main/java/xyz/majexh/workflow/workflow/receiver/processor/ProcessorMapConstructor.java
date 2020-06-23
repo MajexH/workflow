@@ -46,7 +46,9 @@ public class ProcessorMapConstructor implements InitializingBean {
 
     private void registerProcessor(Class<?> clazz) {
         ProcessorTypeAnnotation annotation = AnnotationUtils.getAnnotation(clazz, ProcessorTypeAnnotation.class);
-        if (annotation == null) return;
+        if (annotation == null) {
+            return;
+        }
         this.processorMap.put(annotation.value(), getProcessorBean(clazz));
         log.debug(String.format("%s has been added to processorMap", clazz));
     }
