@@ -2,8 +2,15 @@ package xyz.majexh.workflow.exceptions;
 
 import org.springframework.http.HttpStatus;
 
+/**
+ * @author majexh
+ */
+
 public enum ExceptionEnum {
 
+    /**
+     * 异常定义
+     */
     DUPLICATE_NODE_ID(HttpStatus.BAD_REQUEST, "重复的节点ID"),
     TOPOLOGY_ARGS_NOT_CAPABLE(HttpStatus.BAD_REQUEST, "topology参数错误"),
     START_TOPOLOGY_ERROR(HttpStatus.BAD_REQUEST, "创建拓扑任务失败"),
@@ -20,14 +27,15 @@ public enum ExceptionEnum {
     WRONG_TOPOLOGY_NAME(HttpStatus.BAD_REQUEST, "创建chain失败，请检查参数"),
     CHAIN_NOT_FOUND(HttpStatus.NOT_FOUND, "未找到对应运行链"),
     WRONG_RESUBMIT_TASK_STATE(HttpStatus.BAD_REQUEST, "无法重启正在运行的任务"),
+    CANNOT_FIND_TIME_RANGE(HttpStatus.BAD_REQUEST, "找不到时间范围，请检查数据"),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "内部错误");
 
     private HttpStatus status;
     private String message;
 
-    ExceptionEnum(HttpStatus status, String Message) {
+    ExceptionEnum(HttpStatus status, String message) {
         this.status = status;
-        this.message = Message;
+        this.message = message;
     }
 
     public HttpStatus getStatus() {
