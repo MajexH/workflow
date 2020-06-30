@@ -255,4 +255,25 @@ class WorkflowApplicationTests {
         InputStream s = new BufferedInputStream(new FileInputStream(new File("")));
         System.out.println(res);
     }
+
+    @Test
+    void testJSONParse() {
+        TestDocument a = new TestDocument(new Date(), 123D, 123D, 123D);
+
+        String json = JSON.toJSONString(a);
+
+        List<TestDocument> list = new ArrayList<>();
+        list.add(a);
+
+        String json2 = JSON.toJSONString(list);
+
+        JSON obj = (JSON) JSON.parse(json2);
+        JSON obj1 = (JSON) JSON.parse(json);
+
+        System.out.println(JSON.parse(json) instanceof JSON);
+        System.out.println(JSON.parse(json2) instanceof JSON);
+
+        System.out.println(JSON.parse(json));
+        System.out.println(obj);
+    }
 }

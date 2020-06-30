@@ -106,7 +106,8 @@ public class Receiver {
             chain.setMessage("从worker处获取到不包含params字段的消息，请检查参数");
             return;
         }
-        JSON outputs = JSON.parseObject(message.get("params").toString());
+//        JSON.parse() 出来的东西是通过 defaultParse 出来的 直接转型不会失败
+        JSON outputs = (JSON) JSON.parse(message.get("params").toString());
         task.setOutputParams(outputs);
         // 保存当前的输出
         chain.saveParams(outputs);
