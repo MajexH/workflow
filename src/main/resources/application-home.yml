@@ -1,14 +1,14 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/GNSS?characterEncoding=utf-8&allowMultiQueries=true
+    url: jdbc:mysql://192.168.1.48:3306/GNSS?characterEncoding=utf-8&allowMultiQueries=true
     username: root
     password: a564335
   jpa:
     show-sql: true
   data:
     mongodb:
-      uri: mongodb://localhost:27017/rtkData
+      uri: mongodb://192.168.1.48:27017/rtkData
       host: localhost
       port: 27017
       database: rtkData

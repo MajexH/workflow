@@ -121,8 +121,8 @@ public class ControllerService implements ControllerServiceInterface {
     }
 
     @Override
-    public String startTopologyByName(String topologyName, JSON inputParams) throws Exception {
-        return this.controller.startTopologyByName(topologyName, inputParams);
+    public String startTopologyByName(String topologyName, JSON inputParams, int index, int multi) throws Exception {
+        return this.controller.startTopologyByName(topologyName, inputParams, multi, index);
     }
 
 

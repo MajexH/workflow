@@ -30,8 +30,10 @@ public class Chain {
     private ConcurrentHashMap<String, Object> params;
     // 保存当前失败的错误消息
     private String message;
+    private int index;
+    private int multi;
 
-    public Chain(Topology topology) {
+    public Chain(Topology topology, int index, int multi) {
         this.id = StringUtils.getUUID();
         this.topology = topology;
         this.state = State.CREATED;
@@ -40,6 +42,8 @@ public class Chain {
             put(state.getStateName(), new Date().getTime());
         }};
         this.params = new ConcurrentHashMap<>();
+        this.index = index;
+        this.multi = multi;
     }
 
     public void changeState(State state) {

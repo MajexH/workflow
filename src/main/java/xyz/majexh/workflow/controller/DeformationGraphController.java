@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @RequestMapping(path = "/deformationGraph")
 public class DeformationGraphController {
 
-    private static final String MONGO_AFTER_PROCESS_POSTFIX = "raw";
+    private static final String MONGO_AFTER_PROCESS_POSTFIX = "postprocess";
 
     @Resource
     private RtkDataService rtkDataService;

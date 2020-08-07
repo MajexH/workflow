@@ -1,8 +1,10 @@
 package xyz.majexh.workflow.workflow.executors;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import xyz.majexh.workflow.exceptions.BaseException;
 import xyz.majexh.workflow.exceptions.ExceptionEnum;
@@ -45,6 +47,11 @@ public class ChainExecutor {
             throw new BaseException(ExceptionEnum.START_TOPOLOGY_ERROR);
         }
         Node firstNode = topology.getNodeMap().get(startId);
+        // 添加 multi index 到 task 任务的 inputparams 中
+        if (!(inputParams instanceof JSONObject)) throw new BaseException(HttpStatus.BAD_REQUEST, "入参错误");
+        // 标识这个是 并行度里面的 multi 的哪个小块儿
+        ((JSONObject) inputParams).put("multi", chain.getMulti());
+        ((JSONObject) inputParams).put("index", chain.getIndex());
         if (!firstNode.checkInputParams(inputParams)) {
             throw new BaseException(ExceptionEnum.INPUT_PARAMS_ERROR);
         }
@@ -89,9 +96,13 @@ public class ChainExecutor {
                     log.error(String.format("%s's params %s, cannot satisfy %s input params", taskId, chain.getParams(), next.getInputParams()));
                     throw new BaseException(ExceptionEnum.OUTPUT_NOT_SATISFY);
                 } else {
+
                     for (String key : next.getInputParams()) {
                         input.put(key, chain.getParams().get(key));
                     }
+                    // 获取并行度和index
+                    input.put("multi", chain.getMulti());
+                    input.put("index", chain.getIndex());
                 }
                 Task nextTask = new Task(next, chain.getId(), JSONUtils.hashMap2Json(input));
                 this.fileSystemTaskArgs(chain.getId(), nextTask);

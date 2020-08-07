@@ -29,9 +29,4 @@ public class ChainController {
     public ResponseEntity<HashMap<String, Object>> getChain(String chainId) throws Exception {
         return ResEntity.okDefault(this.controllerService.getChain(chainId));
     }
-
-    @PostMapping(path = "/chain")
-    public void modifyChain() {
-
-    }
 }

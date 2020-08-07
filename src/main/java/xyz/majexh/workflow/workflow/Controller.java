@@ -72,9 +72,9 @@ public class Controller implements ApplicationRunner {
         this.builder = builder;
     }
 
-    private Chain createChain(String name) throws Exception {
+    private Chain createChain(String name, int index, int multi) throws Exception {
         if (!this.topologies.containsKey(name)) throw new BaseException(ExceptionEnum.WRONG_TOPOLOGY_NAME);
-        Chain chain = new Chain(this.topologies.get(name));
+        Chain chain = new Chain(this.topologies.get(name), index, multi);
         this.chainMap.put(chain.getId(), chain);
         log.info(String.format("%s chain has been created", chain.getId()));
         this.putChain(chain);
@@ -136,8 +136,8 @@ public class Controller implements ApplicationRunner {
         this.startRecv();
     }
 
-    public String startTopologyByName(String name, @Nullable JSON inputParams) throws Exception {
-        Chain chain = this.createChain(name);
+    public String startTopologyByName(String name, @Nullable JSON inputParams, int multi, int index) throws Exception {
+        Chain chain = this.createChain(name, index, multi);
         if (inputParams == null) {
             inputParams = new JSONObject();
         }
@@ -147,7 +147,7 @@ public class Controller implements ApplicationRunner {
         return chain.getId();
     }
 
-    // TODO: 针对第一个任务的类型 也要调用相应的节点判断逻辑 和 节点的运行逻辑
+    // 第一个节点必须是 user 类型
     public void submitTask(String taskId) {
         Chain chain = this.getChain(StringUtils.extractChainIdFromTaskId(taskId));
         this.messageControllerImpl.putTask(chain.getTask(taskId));

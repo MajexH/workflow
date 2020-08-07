@@ -257,23 +257,21 @@ class WorkflowApplicationTests {
     }
 
     @Test
-    void testJSONParse() {
-        TestDocument a = new TestDocument(new Date(), 123D, 123D, 123D);
-
-        String json = JSON.toJSONString(a);
-
-        List<TestDocument> list = new ArrayList<>();
-        list.add(a);
-
-        String json2 = JSON.toJSONString(list);
-
-        JSON obj = (JSON) JSON.parse(json2);
-        JSON obj1 = (JSON) JSON.parse(json);
-
-        System.out.println(JSON.parse(json) instanceof JSON);
-        System.out.println(JSON.parse(json2) instanceof JSON);
-
-        System.out.println(JSON.parse(json));
+    void testJson() {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("code", 200);
+        map.put("msg", null);
+        map.put("data", new HashMap<String, Object>(){{
+            put("taskId", "123123");
+            put("status", "FAIL");
+            put("params", new HashMap<String, Object>(){{
+                put("a", 1);
+                put("b", 2);
+            }});
+        }});
+        JSONObject obj = new JSONObject(map);
+        obj.put("multi", 1);
+        obj.put("index", 0);
         System.out.println(obj);
     }
 }

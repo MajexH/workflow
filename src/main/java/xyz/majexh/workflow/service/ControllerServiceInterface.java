@@ -32,5 +32,5 @@ public interface ControllerServiceInterface {
 
     void updateNodeOfTopologyByTopologyName(String topologyName, Node node) throws Exception;
 
-    String startTopologyByName(String topologyName, @Nullable JSON inputParams) throws Exception;
+    String startTopologyByName(String topologyName, @Nullable JSON inputParams, int index, int multi) throws Exception;
 }

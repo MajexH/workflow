@@ -97,6 +97,7 @@ public class Receiver {
      * @param entity
      */
     private void process(Chain chain, Task task, MessageBody entity) {
+
         // 根据res更新输出
         HashMap<String, Object> message = JSONUtils.json2HashMap(entity.getData());
         if (!message.containsKey("params")) {
@@ -113,7 +114,6 @@ public class Receiver {
         chain.saveParams(outputs);
         // task.changeState(State.FINISHED);
         this.aopService.changeState(task, State.FINISHED);
-        log.info(String.format("%s task success finish", task.getId()));
         for (Task nextTask : this.executor.getNextTasks(chain, task.getId())) {
             log.debug(String.format("new task %s generate", nextTask.getId()));
             Processor processor = this.processorMap.get(nextTask.getNodeType());

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * 指示当前任务处于什么状态
+ * @author majexh
  */
 public enum State implements Serializable {
     CREATED("creat"),

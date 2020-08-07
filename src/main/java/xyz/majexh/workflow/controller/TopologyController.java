@@ -14,7 +14,9 @@ import xyz.majexh.workflow.workflow.builder.JsonTopologyBuilder;
 import xyz.majexh.workflow.workflow.builder.TopologyBuilder;
 import xyz.majexh.workflow.workflow.entity.def.Topology;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
@@ -67,12 +69,18 @@ public class TopologyController {
     @PostMapping(path = "/startTopology")
     @SuppressWarnings("unchecked")
     public ResponseEntity<HashMap<String, Object>> startTopology(@RequestBody HashMap<String, Object> input) throws Exception {
-        if (!input.containsKey("topologyName") || !input.containsKey("inputParams")) {
+        if (!input.containsKey("topologyName") || !input.containsKey("inputParams") || !input.containsKey("multi")) {
             throw new BaseException(ExceptionEnum.WRONG_PARAMS);
         }
-        String chainId = this.controllerService.startTopologyByName((String) input.get("topologyName"), new JSONObject((HashMap<String, Object>) input.get("inputParams")));
+        List<String> chainIds = new ArrayList<>();
+        Integer multi = (Integer) input.get("multi");
+        // 启动多个
+        for (int i = 0; i < multi; i++) {
+            String chainId = this.controllerService.startTopologyByName((String) input.get("topologyName"), new JSONObject((HashMap<String, Object>) input.get("inputParams")), i, multi);
+            chainIds.add(chainId);
+        }
         return ResEntity.okDefault(new HashMap<String, Object>(){{
-            put("chainId", chainId);
+            put("chainId", chainIds);
         }});
     }
 
