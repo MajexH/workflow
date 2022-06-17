@@ -17,7 +17,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <json.version>1.2.62</json.version>
+        <json.version>1.2.83</json.version>
         <jwt.version>0.9.1</jwt.version>
         <client.version>0.0.1-SNAPSHOT</client.version>
     </properties>
